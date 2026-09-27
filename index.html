@@ -1,1 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>ZK Traders Bot</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            ZK TRADERS BOT
+        </div>
+
+        <a href="#" class="nav-item active">Dashboard</a>
+        <a href="#" class="nav-item">Accounts</a>
+        <a href="#" class="nav-item">Risk Management</a>
+        <a href="#" class="nav-item">Activity Logs</a>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <div class="header">
+
+            <div>
+                <h1>Trading Dashboard</h1>
+                <p>MT5 Bot Control Panel</p>
+            </div>
+
+            <div class="status-online">
+                ● System Online
+            </div>
+
+        </div>
+
+
+        <!-- TOP CARDS -->
+        <div class="cards">
+
+            <div class="card">
+                <h3>Bot Status</h3>
+                <div class="big-number green">ONLINE</div>
+            </div>
+
+            <div class="card">
+                <h3>Premium Account</h3>
+                <div class="big-number" id="premium-top-status">
+                    READY
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Second Account</h3>
+                <div class="big-number" id="second-top-status">
+                    READY
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ACCOUNTS -->
+        <div class="account-grid">
+
+
+            <!-- PREMIUM ACCOUNT -->
+            <div class="card">
+
+                <div class="account-header">
+                    <h2>Premium Account</h2>
+
+                    <span class="connected">
+                        ● Connected
+                    </span>
+                </div>
+
+                <br>
+
+                <h3>
+                    Bot Status:
+                    <span id="premium-status" class="green">
+                        STOPPED
+                    </span>
+                </h3>
+
+
+                <!-- BUTTONS -->
+                <div>
+
+                    <button
+                        class="start"
+                        onclick="setBotStatus('premium','RUNNING')">
+                        START
+                    </button>
+
+                    <button
+                        class="pause"
+                        onclick="setBotStatus('premium','PAUSED')">
+                        PAUSE
+                    </button>
+
+                    <button
+                        class="stop"
+                        onclick="setBotStatus('premium','STOPPED')">
+                        STOP
+                    </button>
+
+                </div>
+
+
+                <!-- CONTROLS -->
+
+                <div class="control">
+                    <span>Auto Trading</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','autoTrading',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Buy</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','buy',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Sell</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','sell',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>New Trades</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','newTrades',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Daily Target Protection</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','dailyTarget',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Daily Loss Protection</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','dailyLoss',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Risk Management</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','risk',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Drawdown Protection</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','drawdown',this.checked)">
+                </div>
+
+
+                <br>
+
+                <h3>Risk Settings</h3>
+
+                <div class="control">
+                    <span>Risk %</span>
+
+                    <input
+                        type="number"
+                        id="premium-risk"
+                        value="1"
+                        min="0"
+                        step="0.1">
+                </div>
+
+                <div class="control">
+                    <span>Daily Target %</span>
+
+                    <input
+                        type="number"
+                        id="premium-target"
+                        value="1"
+                        min="0"
+                        step="0.1">
+                </div>
+
+                <div class="control">
+                    <span>Daily Loss %</span>
+
+                    <input
+                        type="number"
+                        id="premium-loss"
+                        value="1"
+                        min="0"
+                        step="0.1">
+                </div>
+
+
+                <br>
+
+                <button
+                    class="blue"
+                    onclick="saveSettings('premium')">
+                    SAVE SETTINGS
+                </button>
+
+                <button
+                    class="stop"
+                    onclick="setBotStatus('premium','STOPPED')">
+                    EMERGENCY STOP
+                </button>
+
+            </div>
+
+
+
+            <!-- SECOND ACCOUNT -->
+            <div class="card">
+
+                <div class="account-header">
+                    <h2>Second Account</h2>
+
+                    <span class="connected">
+                        ● Connected
+                    </span>
+                </div>
+
+                <br>
+
+                <h3>
+                    Bot Status:
+                    <span id="second-status" class="green">
+                        STOPPED
+                    </span>
+                </h3>
+
+
+                <!-- BUTTONS -->
+                <div>
+
+                    <button
+                        class="start"
+                        onclick="setBotStatus('second','RUNNING')">
+                        START
+                    </button>
+
+                    <button
+                        class="pause"
+                        onclick="setBotStatus('second','PAUSED')">
+                        PAUSE
+                    </button>
+
+                    <button
+                        class="stop"
+                        onclick="setBotStatus('second','STOPPED')">
+                        STOP
+                    </button>
+
+                </div>
+
+
+                <!-- CONTROLS -->
+
+                <div class="control">
+                    <span>Auto Trading</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','autoTrading',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Buy</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','buy',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Sell</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','sell',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>New Trades</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','newTrades',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Daily Target Protection</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','dailyTarget',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Daily Loss Protection</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','dailyLoss',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Risk Management</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','risk',this.checked)">
+                </div>
+
+                <div class="control">
+                    <span>Drawdown Protection</span>
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','drawdown',this.checked)">
+                </div>
+
+
+                <br>
+
+                <h3>Risk Settings</h3>
+
+                <div class="control">
+                    <span>Risk %</span>
+
+                    <input
+                        type="number"
+                        id="second-risk"
+                        value="1"
+                        min="0"
+                        step="0.1">
+                </div>
+
+                <div class="control">
+                    <span>Daily Target %</span>
+
+                    <input
+                        type="number"
+                        id="second-target"
+                        value="1"
+                        min="0"
+                        step="0.1">
+                </div>
+
+                <div class="control">
+                    <span>Daily Loss %</span>
+
+                    <input
+                        type="number"
+                        id="second-loss"
+                        value="1"
+                        min="0"
+                        step="0.1">
+                </div>
+
+
+                <br>
+
+                <button
+                    class="blue"
+                    onclick="saveSettings('second')">
+                    SAVE SETTINGS
+                </button>
+
+                <button
+                    class="stop"
+                    onclick="setBotStatus('second','STOPPED')">
+                    EMERGENCY STOP
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- GLOBAL SAFETY -->
+        <div class="card">
+
+            <h2>Global Safety</h2>
+
+            <div class="control">
+                <span>Emergency System Stop</span>
+
+                <button
+                    class="stop"
+                    onclick="alert('Global emergency stop activated')">
+                    EMERGENCY STOP
+                </button>
+            </div>
+
+            <div class="control">
+                <span>System Protection</span>
+
+                <span class="green">
+                    ACTIVE
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVITY -->
+        <div class="card">
+
+            <h2>Activity Logs</h2>
+
+            <br>
+
+            <p>
+                System initialized successfully.
+            </p>
+
+            <p>
+                Premium account control ready.
+            </p>
+
+            <p>
+                Second account control ready.
+            </p>
+
+            <p>
+                Waiting for MT5 EA connection...
+            </p>
+
+        </div>
+
+
+        <!-- FOOTER -->
+        <div class="card">
+
+            <h3>ZK Traders Bot</h3>
+
+            <p>
+                Website dashboard is ready.
+            </p>
+
+            <p>
+                MT5 live control will be connected through
+                Backend API + MT5 EA Connector.
+            </p>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
