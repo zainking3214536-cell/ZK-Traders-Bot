@@ -19,15 +19,19 @@ async function sendCommand(account, command) {
         console.log("ZK Traders API:", data);
 
         if (!response.ok || !data.ok) {
-            alert("API Error");
-            return;
+            alert("API Error: " + (data.error || "Unknown error"));
+            return false;
         }
 
         updateStatus(account, command);
+        addActivity(account, command);
+
+        return true;
 
     } catch (error) {
         console.error("API connection error:", error);
         alert("API connection failed");
+        return false;
     }
 }
 
@@ -69,6 +73,20 @@ function setBotStatus(account, status) {
 }
 
 
+function emergencyStop(account) {
+
+    if (!confirm(
+        "Emergency Stop " +
+        account +
+        " bot?"
+    )) {
+        return;
+    }
+
+    sendCommand(account, "EMERGENCY_STOP");
+}
+
+
 function toggleControl(account, control, enabled) {
 
     console.log(
@@ -77,6 +95,14 @@ function toggleControl(account, control, enabled) {
         control +
         " | " +
         (enabled ? "ON" : "OFF")
+    );
+
+    localStorage.setItem(
+        "ZK_Control_" +
+        account +
+        "_" +
+        control,
+        enabled ? "ON" : "OFF"
     );
 }
 
@@ -102,5 +128,91 @@ function saveSettings(account) {
     );
 
 
-    alert(account + " settings saved.");
+    alert(
+        account +
+        " settings saved.\n\n" +
+        "Risk: " +
+        settings.risk +
+        "%\n" +
+        "Daily Target: " +
+        settings.dailyTarget +
+        "%\n" +
+        "Daily Loss: " +
+        settings.dailyLoss +
+        "%"
+    );
 }
+
+
+function addActivity(account, command) {
+
+    console.log(
+        "Activity:",
+        account,
+        command,
+        new Date().toLocaleString()
+    );
+}
+
+
+function loadSettings(account) {
+
+    const saved =
+        localStorage.getItem(
+            "ZK_Traders_" + account
+        );
+
+    if (!saved) {
+        return;
+    }
+
+    try {
+
+        const settings = JSON.parse(saved);
+
+        const risk =
+            document.getElementById(account + "-risk");
+
+        const target =
+            document.getElementById(account + "-target");
+
+        const loss =
+            document.getElementById(account + "-loss");
+
+
+        if (risk && settings.risk !== undefined) {
+            risk.value = settings.risk;
+        }
+
+        if (target && settings.dailyTarget !== undefined) {
+            target.value = settings.dailyTarget;
+        }
+
+        if (loss && settings.dailyLoss !== undefined) {
+            loss.value = settings.dailyLoss;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Settings load error:",
+            error
+        );
+
+    }
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadSettings("premium");
+        loadSettings("second");
+
+        console.log(
+            "ZK Traders Bot Dashboard loaded."
+        );
+
+    }
+);
