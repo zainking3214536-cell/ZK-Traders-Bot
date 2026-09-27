@@ -65,6 +65,14 @@ function setBotStatus(account, status) {
 
     let command = status;
 
+    if (status === "RUNNING") {
+        command = "RUNNING";
+    }
+
+    if (status === "PAUSED") {
+        command = "PAUSE";
+    }
+
     if (status === "STOPPED") {
         command = "STOP";
     }
