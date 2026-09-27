@@ -63,7 +63,15 @@ function updateStatus(account, status) {
 
 function setBotStatus(account, status) {
 
-    let command = status;
+   let command = status;
+
+if (status === "PAUSED") {
+    command = "PAUSE";
+}
+
+if (status === "STOPPED") {
+    command = "STOP";
+}
 
     if (status === "RUNNING") {
         command = "RUNNING";
