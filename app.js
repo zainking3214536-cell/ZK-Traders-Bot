@@ -256,21 +256,12 @@ async function customerLogin() {
     const password =
         document.getElementById("customer-password").value;
 
- async function customerLogin() {
-
-    const email =
-        document.getElementById("customer-email").value.trim();
-
-    const password =
-        document.getElementById("customer-password").value;
-
     if (!email || !password) {
         alert("Email aur password enter karein.");
         return;
     }
 
     try {
-
         const response = await fetch(
             API_URL + "/auth/login",
             {
@@ -294,20 +285,9 @@ async function customerLogin() {
             return;
         }
 
-        localStorage.setItem(
-            "ZK_customer_token",
-            data.token
-        );
-
-        localStorage.setItem(
-            "ZK_customer_id",
-            data.customer_id
-        );
-
-        localStorage.setItem(
-            "ZK_customer_role",
-            data.role
-        );
+        localStorage.setItem("ZK_customer_token", data.token);
+        localStorage.setItem("ZK_customer_id", data.customer_id);
+        localStorage.setItem("ZK_customer_role", data.role);
 
         alert(
             "Login successful!\n\n" +
@@ -318,12 +298,8 @@ async function customerLogin() {
         );
 
     } catch (error) {
-
         console.error("Login error:", error);
-
-        alert(
-            "Login server se connect nahi ho saka."
-        );
+        alert("Login server se connect nahi ho saka.");
     }
 }
 
@@ -342,7 +318,6 @@ async function customerRegister() {
     }
 
     try {
-
         const response = await fetch(
             API_URL + "/auth/register",
             {
@@ -370,15 +345,10 @@ async function customerRegister() {
         );
 
     } catch (error) {
-
         console.error("Registration error:", error);
-
-        alert(
-            "Registration server se connect nahi ho saka."
-        );
+        alert("Registration server se connect nahi ho saka.");
     }
 }
-
 
 window.customerLogin = customerLogin;
 window.customerRegister = customerRegister;
