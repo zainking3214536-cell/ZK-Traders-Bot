@@ -248,8 +248,76 @@ function subscribeDemo() {
         "Demo subscription / testing page will open next."
     );
 }
-function customerLogin() {
+async function customerLogin() {
 
+    const email =
+        document.getElementById("customer-email").value.trim();
+
+    const password =
+        document.getElementById("customer-password").value;
+
+    if (!email || !password) {
+        alert("Email aur password enter karein.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            API_URL + "/auth/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        console.log("ZK Login:", data);
+
+        if (!response.ok || !data.ok) {
+            alert(data.error || "Login failed.");
+            return;
+        }
+
+        localStorage.setItem(
+            "ZK_customer_token",
+            data.token
+        );
+
+        localStorage.setItem(
+            "ZK_customer_id",
+            data.customer_id
+        );
+
+        localStorage.setItem(
+            "ZK_customer_role",
+            data.role
+        );
+
+        alert(
+            "Login successful!\n\n" +
+            "Customer ID: " +
+            data.customer_id +
+            "\nRole: " +
+            data.role
+        );
+
+    } catch (error) {
+
+        console.error("Login error:", error);
+
+        alert(
+            "Login server se connect nahi ho saka."
+        );
+    }
+}
     const email =
         document.getElementById("customer-email").value.trim();
 
