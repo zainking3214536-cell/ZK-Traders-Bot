@@ -975,7 +975,59 @@
 
 
 <script src="app.js"></script>
+<!-- CUSTOMER ACCESS -->
 
+<div class="card" style="max-width:600px;margin:30px auto;">
+
+    <h2>Customer Account</h2>
+
+    <p style="color:#8190a2;">
+        Login or create your ZK Traders Bot account.
+    </p>
+
+    <div style="margin-top:20px;">
+
+        <label>Email / Gmail</label>
+
+        <input
+            type="email"
+            id="customer-email"
+            placeholder="Enter your Gmail"
+            style="width:100%;margin-top:8px;padding:12px;background:#080d14;color:white;border:1px solid #293646;border-radius:7px;"
+        >
+
+    </div>
+
+    <div style="margin-top:15px;">
+
+        <label>Password</label>
+
+        <input
+            type="password"
+            id="customer-password"
+            placeholder="Enter password"
+            style="width:100%;margin-top:8px;padding:12px;background:#080d14;color:white;border:1px solid #293646;border-radius:7px;"
+        >
+
+    </div>
+
+    <div class="buttons" style="margin-top:20px;">
+
+        <button
+            class="blue"
+            onclick="customerLogin()">
+            LOGIN
+        </button>
+
+        <button
+            class="start"
+            onclick="customerRegister()">
+            CREATE ACCOUNT
+        </button>
+
+    </div>
+
+</div>
 </body>
 </html>
 ```
