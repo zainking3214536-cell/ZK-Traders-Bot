@@ -283,3 +283,48 @@ function customerRegister() {
 alert("ZK app.js loaded");
 window.customerLogin = customerLogin;
 window.customerRegister = customerRegister;
+async function customerRegister() {
+
+    const email =
+        document.getElementById("customer-email").value.trim();
+
+    const password =
+        document.getElementById("customer-password").value;
+
+    if (!email || !password) {
+        alert("Email aur password enter karein.");
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            API_URL + "/auth/register",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+            alert(data.error || "Registration failed.");
+            return;
+        }
+
+        alert(
+            "Account created!\n\nCustomer ID: " +
+            data.customer_id
+        );
+
+    } catch (error) {
+        console.error(error);
+        alert("Registration server se connect nahi ho saka.");
+    }
+}
