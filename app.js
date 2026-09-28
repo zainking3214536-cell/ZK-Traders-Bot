@@ -248,3 +248,35 @@ function subscribeDemo() {
         "Demo subscription / testing page will open next."
     );
 }
+function customerLogin() {
+
+    const email =
+        document.getElementById("customer-email").value.trim();
+
+    const password =
+        document.getElementById("customer-password").value;
+
+    if (!email || !password) {
+        alert("Email aur password enter karein.");
+        return;
+    }
+
+    alert("Customer login backend se connect hona baqi hai.");
+}
+
+
+function customerRegister() {
+
+    const email =
+        document.getElementById("customer-email").value.trim();
+
+    const password =
+        document.getElementById("customer-password").value;
+
+    if (!email || !password) {
+        alert("Email aur password enter karein.");
+        return;
+    }
+
+    alert("Customer registration backend se connect hona baqi hai.");
+}
