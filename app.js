@@ -256,6 +256,14 @@ async function customerLogin() {
     const password =
         document.getElementById("customer-password").value;
 
+ async function customerLogin() {
+
+    const email =
+        document.getElementById("customer-email").value.trim();
+
+    const password =
+        document.getElementById("customer-password").value;
+
     if (!email || !password) {
         alert("Email aur password enter karein.");
         return;
@@ -318,39 +326,8 @@ async function customerLogin() {
         );
     }
 }
-    const email =
-        document.getElementById("customer-email").value.trim();
-
-    const password =
-        document.getElementById("customer-password").value;
-
-    if (!email || !password) {
-        alert("Email aur password enter karein.");
-        return;
-    }
-
-    alert("Customer login backend se connect hona baqi hai.");
-}
 
 
-function customerRegister() {
-
-    const email =
-        document.getElementById("customer-email").value.trim();
-
-    const password =
-        document.getElementById("customer-password").value;
-
-    if (!email || !password) {
-        alert("Email aur password enter karein.");
-        return;
-    }
-
-    alert("Customer registration backend se connect hona baqi hai.");
-}
-alert("ZK app.js loaded");
-window.customerLogin = customerLogin;
-window.customerRegister = customerRegister;
 async function customerRegister() {
 
     const email =
@@ -365,6 +342,7 @@ async function customerRegister() {
     }
 
     try {
+
         const response = await fetch(
             API_URL + "/auth/register",
             {
@@ -392,7 +370,15 @@ async function customerRegister() {
         );
 
     } catch (error) {
-        console.error(error);
-        alert("Registration server se connect nahi ho saka.");
+
+        console.error("Registration error:", error);
+
+        alert(
+            "Registration server se connect nahi ho saka."
+        );
     }
 }
+
+
+window.customerLogin = customerLogin;
+window.customerRegister = customerRegister;
