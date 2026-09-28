@@ -232,3 +232,19 @@ document.addEventListener(
 
     }
 );
+function subscribePremium() {
+    alert(
+        "Premium Subscription\n\n" +
+        "Price: Rs 5,000\n" +
+        "Duration: 30 Days\n" +
+        "Payment Method: JazzCash\n\n" +
+        "Payment page will open next."
+    );
+}
+
+function subscribeDemo() {
+    alert(
+        "Demo Account Test\n\n" +
+        "Demo subscription / testing page will open next."
+    );
+}
