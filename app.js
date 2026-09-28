@@ -281,3 +281,5 @@ function customerRegister() {
     alert("Customer registration backend se connect hona baqi hai.");
 }
 alert("ZK app.js loaded");
+window.customerLogin = customerLogin;
+window.customerRegister = customerRegister;
