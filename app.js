@@ -647,12 +647,15 @@ document.addEventListener(
             "second"
         );
 
+        loadSubscriberCount();
+
+        loadCustomers();
+
         console.log(
             "ZK Traders Bot Dashboard loaded."
         );
     }
 );
-
 
 window.setBotStatus =
     setBotStatus;
