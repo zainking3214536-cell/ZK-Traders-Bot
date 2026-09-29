@@ -329,7 +329,65 @@ function subscribePremium() {
 
 function subscribeDemo() {
 async function loadSubscriberCount() {
+async function loadCustomers() {
 
+    try {
+
+        const token =
+            localStorage.getItem("ZK_customer_token");
+
+        if (!token) {
+            console.log("Admin login required.");
+            return;
+        }
+
+        const response =
+            await fetch(
+                API_URL + "/customers",
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Customers:",
+            data
+        );
+
+        if (
+            !response.ok ||
+            !data.ok
+        ) {
+
+            console.error(
+                "Customers API error:",
+                data.error
+            );
+
+            return;
+        }
+
+        localStorage.setItem(
+            "ZK_customers",
+            JSON.stringify(data.customers)
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Customers connection error:",
+            error
+        );
+    }
+}
     try {
 
         const token =
