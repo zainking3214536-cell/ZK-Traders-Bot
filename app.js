@@ -330,6 +330,15 @@ function subscribePremium() {
 function subscribeDemo() {
 
 
+
+
+    alert(
+        "Demo Account Test\n\n" +
+        "Demo subscription / testing page will open next."
+    );
+}
+async function loadSubscriberCount() {
+
     try {
 
         const token =
@@ -344,6 +353,44 @@ function subscribeDemo() {
             await fetch(
                 API_URL + "/subscribers/count",
                 {
+                    method: "GET",
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log("Subscriber Count:", data);
+
+        if (!response.ok || !data.ok) {
+            console.error(
+                "Subscriber count error:",
+                data.error
+            );
+            return;
+        }
+
+        const elements =
+            document.querySelectorAll(
+                ".subscriber-count"
+            );
+
+        elements.forEach(function (element) {
+            element.textContent = data.total;
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Subscriber count connection error:",
+            error
+        );
+    }
+}
                     method: "GET",
                     headers: {
                         "Authorization":
