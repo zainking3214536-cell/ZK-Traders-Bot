@@ -328,9 +328,69 @@ function subscribePremium() {
 
 
 function subscribeDemo() {
-async function loadSubscriberCount() {
-async function loadCustomers() {
 
+
+    try {
+
+        const token =
+            localStorage.getItem("ZK_customer_token");
+
+        if (!token) {
+            console.log("Admin login required for subscriber count.");
+            return;
+        }
+
+        const response =
+            await fetch(
+                API_URL + "/subscribers/count",
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Subscriber Count:",
+            data
+        );
+
+        if (
+            !response.ok ||
+            !data.ok
+        ) {
+            console.error(
+                "Subscriber count error:",
+                data.error
+            );
+            return;
+        }
+
+        const elements =
+            document.querySelectorAll(
+                ".subscriber-count"
+            );
+
+        elements.forEach(
+            function (element) {
+                element.textContent =
+                    data.total;
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Subscriber count connection error:",
+            error
+        );
+    }
+}
     try {
 
         const token =
