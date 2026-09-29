@@ -14,25 +14,27 @@ async function sendCommand(account, command) {
             return false;
         }
 
-        const response = await fetch(
-            API_URL + "/command",
-            {
-                method: "POST",
+        const response =
+            await fetch(
+                API_URL + "/command",
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization":
-                        "Bearer " + token
-                },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization":
+                            "Bearer " + token
+                    },
 
-                body: JSON.stringify({
-                    account: account,
-                    command: command
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        account: account,
+                        command: command
+                    })
+                }
+            );
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
         console.log(
             "ZK Traders API:",
@@ -329,23 +331,28 @@ function subscribePremium() {
 
 function subscribeDemo() {
 
-
-
-
     alert(
         "Demo Account Test\n\n" +
         "Demo subscription / testing page will open next."
     );
 }
+
+
 async function loadSubscriberCount() {
 
     try {
 
         const token =
-            localStorage.getItem("ZK_customer_token");
+            localStorage.getItem(
+                "ZK_customer_token"
+            );
 
         if (!token) {
-            console.log("Admin login required for subscriber count.");
+
+            console.log(
+                "Admin login required for subscriber count."
+            );
+
             return;
         }
 
@@ -354,44 +361,7 @@ async function loadSubscriberCount() {
                 API_URL + "/subscribers/count",
                 {
                     method: "GET",
-                    headers: {
-                        "Authorization":
-                            "Bearer " + token
-                    }
-                }
-            );
 
-        const data =
-            await response.json();
-
-        console.log("Subscriber Count:", data);
-
-        if (!response.ok || !data.ok) {
-            console.error(
-                "Subscriber count error:",
-                data.error
-            );
-            return;
-        }
-
-        const elements =
-            document.querySelectorAll(
-                ".subscriber-count"
-            );
-
-        elements.forEach(function (element) {
-            element.textContent = data.total;
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Subscriber count connection error:",
-            error
-        );
-    }
-}
-                    method: "GET",
                     headers: {
                         "Authorization":
                             "Bearer " + token
@@ -411,10 +381,12 @@ async function loadSubscriberCount() {
             !response.ok ||
             !data.ok
         ) {
+
             console.error(
                 "Subscriber count error:",
                 data.error
             );
+
             return;
         }
 
@@ -425,6 +397,7 @@ async function loadSubscriberCount() {
 
         elements.forEach(
             function (element) {
+
                 element.textContent =
                     data.total;
             }
@@ -438,13 +411,23 @@ async function loadSubscriberCount() {
         );
     }
 }
+
+
+async function loadCustomers() {
+
     try {
 
         const token =
-            localStorage.getItem("ZK_customer_token");
+            localStorage.getItem(
+                "ZK_customer_token"
+            );
 
         if (!token) {
-            console.log("Admin login required.");
+
+            console.log(
+                "Admin login required."
+            );
+
             return;
         }
 
@@ -484,7 +467,9 @@ async function loadSubscriberCount() {
 
         localStorage.setItem(
             "ZK_customers",
-            JSON.stringify(data.customers)
+            JSON.stringify(
+                data.customers
+            )
         );
 
     } catch (error) {
@@ -494,75 +479,6 @@ async function loadSubscriberCount() {
             error
         );
     }
-}
-    try {
-
-        const token =
-            localStorage.getItem("ZK_customer_token");
-
-        if (!token) {
-            console.log("Admin login required for subscriber count.");
-            return;
-        }
-
-        const response =
-            await fetch(
-                API_URL + "/subscribers/count",
-                {
-                    method: "GET",
-
-                    headers: {
-                        "Authorization":
-                            "Bearer " + token
-                    }
-                }
-            );
-
-        const data =
-            await response.json();
-
-        console.log(
-            "Subscriber Count:",
-            data
-        );
-
-        if (
-            !response.ok ||
-            !data.ok
-        ) {
-
-            console.error(
-                "Subscriber count error:",
-                data.error
-            );
-
-            return;
-        }
-
-        const elements =
-            document.querySelectorAll(
-                ".subscriber-count"
-            );
-
-        elements.forEach(
-            function (element) {
-                element.textContent =
-                    data.total;
-            }
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Subscriber count connection error:",
-            error
-        );
-    }
-}
-    alert(
-        "Demo Account Test\n\n" +
-        "Demo subscription / testing page will open next."
-    );
 }
 
 
@@ -650,6 +566,9 @@ async function customerLogin() {
             "\nRole: " +
             data.role
         );
+
+        loadSubscriberCount();
+        loadCustomers();
 
     } catch (error) {
 
@@ -764,6 +683,7 @@ document.addEventListener(
     }
 );
 
+
 window.setBotStatus =
     setBotStatus;
 
@@ -775,3 +695,15 @@ window.customerLogin =
 
 window.customerRegister =
     customerRegister;
+
+window.subscribePremium =
+    subscribePremium;
+
+window.subscribeDemo =
+    subscribeDemo;
+
+window.toggleControl =
+    toggleControl;
+
+window.saveSettings =
+    saveSettings;
