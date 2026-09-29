@@ -256,42 +256,6 @@ async function customerLogin() {
     const password =
         document.getElementById("customer-password").value;
 
-   headers: {
-    "Content-Type": "application/json"
-    
-},
-body: JSON.stringify({
-    email: email,
-    password: password
-})
-
-        localStorage.setItem("ZK_customer_token", data.token);
-        localStorage.setItem("ZK_customer_id", data.customer_id);
-        localStorage.setItem("ZK_customer_role", data.role);
-
-        alert(
-            "Login successful!\n\n" +
-            "Customer ID: " +
-            data.customer_id +
-            "\nRole: " +
-            data.role
-        );
-
-    } catch (error) {
-        console.error("Login error:", error);
-        alert("Login server se connect nahi ho saka.");
-    }
-}
-
-
-async function customerRegister() {
-
-    const email =
-        document.getElementById("customer-email").value.trim();
-
-    const password =
-        document.getElementById("customer-password").value;
-
     if (!email || !password) {
         alert("Email aur password enter karein.");
         return;
@@ -299,7 +263,7 @@ async function customerRegister() {
 
     try {
         const response = await fetch(
-            API_URL + "/auth/register",
+            API_URL + "/auth/login",
             {
                 method: "POST",
                 headers: {
@@ -314,23 +278,44 @@ async function customerRegister() {
 
         const data = await response.json();
 
+        console.log("ZK Login:", data);
+
         if (!response.ok || !data.ok) {
-            alert(data.error || "Registration failed.");
+            alert(data.error || "Login failed.");
             return;
         }
 
-        alert(
-            "Account created!\n\nCustomer ID: " +
+        localStorage.setItem(
+            "ZK_customer_token",
+            data.token
+        );
+
+        localStorage.setItem(
+            "ZK_customer_id",
             data.customer_id
         );
 
+        localStorage.setItem(
+            "ZK_customer_role",
+            data.role
+        );
+
+        alert(
+            "Login successful!\n\n" +
+            "Customer ID: " +
+            data.customer_id +
+            "\nRole: " +
+            data.role
+        );
+
     } catch (error) {
-        console.error("Registration error:", error);
-        alert("Registration server se connect nahi ho saka.");
+        console.error("Login error:", error);
+        alert("Login server se connect nahi ho saka.");
     }
 }
-
-window.customerLogin = customerLogin;
+ 
+ 
+    
 window.customerRegister = customerRegister;
 window.setBotStatus = setBotStatus;
 window.emergencyStop = emergencyStop;
