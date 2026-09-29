@@ -355,3 +355,5 @@ async function customerRegister() {
 
 window.customerLogin = customerLogin;
 window.customerRegister = customerRegister;
+window.setBotStatus = setBotStatus;
+window.emergencyStop = emergencyStop;
