@@ -1,17 +1,31 @@
 ```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>ZK Traders Bot</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
     <style>
+
         * {
             box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -36,6 +50,7 @@
             position: fixed;
             top: 0;
             bottom: 0;
+            overflow-y: auto;
         }
 
         .logo {
@@ -105,13 +120,18 @@
         }
 
         .card {
-            background: linear-gradient(145deg, #111822, #0d131c);
+            background: linear-gradient(
+                145deg,
+                #111822,
+                #0d131c
+            );
             border: 1px solid #202b39;
             border-radius: 14px;
             padding: 20px;
             margin-bottom: 20px;
         }
 
+        .card h2,
         .card h3 {
             margin-top: 0;
         }
@@ -155,6 +175,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
 
         .connected {
@@ -215,6 +236,7 @@
             align-items: center;
             padding: 11px 0;
             border-bottom: 1px solid #1c2632;
+            gap: 15px;
         }
 
         .control input[type="number"] {
@@ -260,6 +282,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 700px;
         }
 
         th,
@@ -291,6 +314,32 @@
             color: #ff647d;
         }
 
+        .badge-pending {
+            background: #332b12;
+            color: #ffd166;
+        }
+
+        /* CUSTOMER TABLE */
+
+        .customer-id {
+            color: #25d5ff;
+            font-weight: bold;
+        }
+
+        .customer-email {
+            color: #dce5ef;
+        }
+
+        .admin-badge {
+            background: #12354b;
+            color: #25d5ff;
+        }
+
+        .customer-badge {
+            background: #10291f;
+            color: #35e58a;
+        }
+
         /* CHART */
 
         .chart {
@@ -304,7 +353,11 @@
 
         .bar {
             flex: 1;
-            background: linear-gradient(to top, #168eae, #2cddff);
+            background: linear-gradient(
+                to top,
+                #168eae,
+                #2cddff
+            );
             border-radius: 5px 5px 0 0;
             min-height: 10px;
         }
@@ -323,6 +376,29 @@
             font-size: 11px;
             padding: 20px;
         }
+
+        /* LOGIN */
+
+        .customer-access {
+            max-width: 600px;
+            margin: 30px auto;
+        }
+
+        .customer-input {
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px;
+            background: #080d14;
+            color: white;
+            border: 1px solid #293646;
+            border-radius: 7px;
+        }
+
+        .customer-help {
+            color: #8190a2;
+        }
+
+        /* RESPONSIVE */
 
         @media(max-width: 1100px) {
 
@@ -373,10 +449,23 @@
             .header {
                 align-items: flex-start;
                 gap: 10px;
+                flex-direction: column;
+            }
+
+            .account-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .control {
+                align-items: flex-start;
             }
         }
+
     </style>
+
 </head>
+
 
 <body>
 
@@ -390,13 +479,53 @@
             ZK TRADERS BOT
         </div>
 
-        <a href="#" class="nav-item active">▦ &nbsp; Dashboard</a>
-        <a href="#" class="nav-item">◈ &nbsp; Bots</a>
-        <a href="#" class="nav-item">▣ &nbsp; Accounts</a>
-        <a href="#" class="nav-item">♙ &nbsp; Subscribers</a>
-        <a href="#" class="nav-item">▤ &nbsp; Payments</a>
-        <a href="#" class="nav-item">⌁ &nbsp; Analytics</a>
-        <a href="#" class="nav-item">⚙ &nbsp; Settings</a>
+        <a
+            href="#dashboard"
+            class="nav-item active">
+            ▦ &nbsp; Dashboard
+        </a>
+
+        <a
+            href="#bots"
+            class="nav-item">
+            ◈ &nbsp; Bots
+        </a>
+
+        <a
+            href="#accounts"
+            class="nav-item">
+            ▣ &nbsp; Accounts
+        </a>
+
+        <a
+            href="#customers"
+            class="nav-item">
+            ♙ &nbsp; Customers
+        </a>
+
+        <a
+            href="#subscribers"
+            class="nav-item">
+            ♙ &nbsp; Subscribers
+        </a>
+
+        <a
+            href="#payments"
+            class="nav-item">
+            ▤ &nbsp; Payments
+        </a>
+
+        <a
+            href="#analytics"
+            class="nav-item">
+            ⌁ &nbsp; Analytics
+        </a>
+
+        <a
+            href="#settings"
+            class="nav-item">
+            ⚙ &nbsp; Settings
+        </a>
 
     </aside>
 
@@ -407,11 +536,21 @@
 
         <!-- HEADER -->
 
-        <div class="header">
+        <div
+            class="header"
+            id="dashboard">
 
             <div>
-                <h1>ZK Traders Bot</h1>
-                <p>MT5 Trading Bot & Subscription Control Center</p>
+
+                <h1>
+                    ZK Traders Bot
+                </h1>
+
+                <p>
+                    MT5 Trading Bot &
+                    Subscription Control Center
+                </p>
+
             </div>
 
             <div class="status-online">
@@ -426,56 +565,136 @@
         <div class="cards">
 
             <div class="card">
-                <div class="metric-label">TOTAL SUBSCRIBERS</div>
-               <div class="metric-number subscriber-count">0</div>
-                <small>Registered users</small>
+
+                <div class="metric-label">
+                    TOTAL SUBSCRIBERS
+                </div>
+
+                <div
+                    class="metric-number subscriber-count">
+                    0
+                </div>
+
+                <small>
+                    Active database subscribers
+                </small>
+
             </div>
 
-            <div class="card">
-                <div class="metric-label">ACTIVE BOTS</div>
-                <div class="metric-number green">42</div>
-                <small>Currently enabled</small>
-            </div>
 
             <div class="card">
-                <div class="metric-label">EXPIRED</div>
-                <div class="metric-number red">16</div>
-                <small>Need renewal</small>
+
+                <div class="metric-label">
+                    ACTIVE BOTS
+                </div>
+
+                <div class="metric-number green">
+                    0
+                </div>
+
+                <small>
+                    Currently enabled
+                </small>
+
             </div>
 
+
             <div class="card">
-                <div class="metric-label">PAYMENTS</div>
-                <div class="metric-number cyan">Rs 384K</div>
-                <small>Demo statistics</small>
+
+                <div class="metric-label">
+                    EXPIRED
+                </div>
+
+                <div class="metric-number red">
+                    0
+                </div>
+
+                <small>
+                    Need renewal
+                </small>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="metric-label">
+                    PAYMENTS
+                </div>
+
+                <div class="metric-number cyan">
+                    Rs 0
+                </div>
+
+                <small>
+                    Database payments
+                </small>
+
             </div>
 
         </div>
 
 
-        <!-- SUBSCRIPTION -->
+        <!-- PREMIUM SUBSCRIPTION -->
 
-        <div class="card">
+        <div
+            class="card"
+            id="payments">
 
-            <h2>Premium Subscription</h2>
+            <h2>
+                Premium Subscription
+            </h2>
 
             <div class="subscription-grid">
 
                 <div class="subscription-box">
-                    <small>Premium Plan</small>
-                    <strong>Rs 5,000</strong>
-                    <p>30 Days Access</p>
+
+                    <small>
+                        Premium Plan
+                    </small>
+
+                    <strong>
+                        Rs 5,000
+                    </strong>
+
+                    <p>
+                        30 Days Access
+                    </p>
+
                 </div>
 
-                <div class="subscription-box">
-                    <small>Payment Method</small>
-                    <strong class="cyan">JazzCash</strong>
-                    <p class="green">● Payment Verified</p>
-                </div>
 
                 <div class="subscription-box">
-                    <small>Subscription Status</small>
-                    <strong class="green">ACTIVE</strong>
-                    <p>23 Days Remaining</p>
+
+                    <small>
+                        Payment Method
+                    </small>
+
+                    <strong class="cyan">
+                        JazzCash
+                    </strong>
+
+                    <p>
+                        Payment verification required
+                    </p>
+
+                </div>
+
+
+                <div class="subscription-box">
+
+                    <small>
+                        Subscription Status
+                    </small>
+
+                    <strong class="yellow">
+                        DATABASE CONTROLLED
+                    </strong>
+
+                    <p>
+                        Admin manages activation
+                    </p>
+
                 </div>
 
             </div>
@@ -485,16 +704,22 @@
 
         <!-- ACCOUNTS -->
 
-        <div class="account-grid">
+        <div
+            id="accounts"
+            class="account-grid">
 
 
             <!-- PREMIUM -->
 
-            <div class="card">
+            <div
+                class="card"
+                id="bots">
 
                 <div class="account-header">
 
-                    <h2>Premium Account</h2>
+                    <h2>
+                        Premium Account
+                    </h2>
 
                     <span class="connected">
                         ● Connected
@@ -502,11 +727,14 @@
 
                 </div>
 
+
                 <div class="bot-status">
 
                     Bot Status:
 
-                    <span id="premium-status" class="green">
+                    <span
+                        id="premium-status"
+                        class="green">
                         STOPPED
                     </span>
 
@@ -543,106 +771,203 @@
 
 
                 <div class="control">
-                    <span>Auto Trading</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('premium','autoTrading',this.checked)">
+
+                    <span>
+                        Auto Trading
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','autoTrading',this.checked)"
+                    >
+
                 </div>
 
-                <div class="control">
-                    <span>Buy</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('premium','buy',this.checked)">
-                </div>
 
                 <div class="control">
-                    <span>Sell</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('premium','sell',this.checked)">
+
+                    <span>
+                        Buy
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','buy',this.checked)"
+                    >
+
                 </div>
 
-                <div class="control">
-                    <span>New Trades</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('premium','newTrades',this.checked)">
-                </div>
 
                 <div class="control">
-                    <span>Daily Target Protection</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('premium','dailyTarget',this.checked)">
+
+                    <span>
+                        Sell
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','sell',this.checked)"
+                    >
+
                 </div>
 
-                <div class="control">
-                    <span>Daily Loss Protection</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('premium','dailyLoss',this.checked)">
-                </div>
 
                 <div class="control">
-                    <span>Risk Management</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('premium','risk',this.checked)">
+
+                    <span>
+                        New Trades
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','newTrades',this.checked)"
+                    >
+
                 </div>
 
+
                 <div class="control">
-                    <span>Drawdown Protection</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('premium','drawdown',this.checked)">
+
+                    <span>
+                        Daily Target Protection
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','dailyTarget',this.checked)"
+                    >
+
+                </div>
+
+
+                <div class="control">
+
+                    <span>
+                        Daily Loss Protection
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','dailyLoss',this.checked)"
+                    >
+
+                </div>
+
+
+                <div class="control">
+
+                    <span>
+                        Risk Management
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','risk',this.checked)"
+                    >
+
+                </div>
+
+
+                <div class="control">
+
+                    <span>
+                        Drawdown Protection
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('premium','drawdown',this.checked)"
+                    >
+
                 </div>
 
 
                 <br>
 
-                <h3>Risk Settings</h3>
+                <h3>
+                    Risk Settings
+                </h3>
+
 
                 <div class="control">
-                    <span>Risk %</span>
+
+                    <span>
+                        Risk %
+                    </span>
+
                     <input
                         type="number"
                         id="premium-risk"
                         value="1"
                         min="0"
-                        step="0.1">
+                        step="0.1"
+                    >
+
                 </div>
 
+
                 <div class="control">
-                    <span>Daily Target %</span>
+
+                    <span>
+                        Daily Target %
+                    </span>
+
                     <input
                         type="number"
                         id="premium-target"
                         value="1"
                         min="0"
-                        step="0.1">
+                        step="0.1"
+                    >
+
                 </div>
 
+
                 <div class="control">
-                    <span>Daily Loss %</span>
+
+                    <span>
+                        Daily Loss %
+                    </span>
+
                     <input
                         type="number"
                         id="premium-loss"
                         value="1"
                         min="0"
-                        step="0.1">
+                        step="0.1"
+                    >
+
                 </div>
+
 
                 <br>
 
                 <button
                     class="blue"
                     onclick="subscribePremium()">
-                      💳 SUBSCRIBE PREMIUM
+                    💳 SUBSCRIBE PREMIUM
                 </button>
 
             </div>
 
 
-            <!-- SECOND -->
+            <!-- DEMO -->
 
             <div class="card">
 
                 <div class="account-header">
 
-                    <h2>Demo Account Test</h2>
+                    <h2>
+                        Demo Account Test
+                    </h2>
 
                     <span class="connected">
                         ● Connected
@@ -650,11 +975,14 @@
 
                 </div>
 
+
                 <div class="bot-status">
 
                     Bot Status:
 
-                    <span id="second-status" class="green">
+                    <span
+                        id="second-status"
+                        class="green">
                         STOPPED
                     </span>
 
@@ -691,94 +1019,189 @@
 
 
                 <div class="control">
-                    <span>Auto Trading</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('second','autoTrading',this.checked)">
+
+                    <span>
+                        Auto Trading
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','autoTrading',this.checked)"
+                    >
+
                 </div>
 
-                <div class="control">
-                    <span>Buy</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('second','buy',this.checked)">
-                </div>
 
                 <div class="control">
-                    <span>Sell</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('second','sell',this.checked)">
+
+                    <span>
+                        Buy
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','buy',this.checked)"
+                    >
+
                 </div>
 
-                <div class="control">
-                    <span>New Trades</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('second','newTrades',this.checked)">
-                </div>
 
                 <div class="control">
-                    <span>Daily Target Protection</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('second','dailyTarget',this.checked)">
+
+                    <span>
+                        Sell
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','sell',this.checked)"
+                    >
+
                 </div>
 
-                <div class="control">
-                    <span>Daily Loss Protection</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('second','dailyLoss',this.checked)">
-                </div>
 
                 <div class="control">
-                    <span>Risk Management</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('second','risk',this.checked)">
+
+                    <span>
+                        New Trades
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','newTrades',this.checked)"
+                    >
+
                 </div>
 
+
                 <div class="control">
-                    <span>Drawdown Protection</span>
-                    <input type="checkbox" checked
-                    onchange="toggleControl('second','drawdown',this.checked)">
+
+                    <span>
+                        Daily Target Protection
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','dailyTarget',this.checked)"
+                    >
+
+                </div>
+
+
+                <div class="control">
+
+                    <span>
+                        Daily Loss Protection
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','dailyLoss',this.checked)"
+                    >
+
+                </div>
+
+
+                <div class="control">
+
+                    <span>
+                        Risk Management
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','risk',this.checked)"
+                    >
+
+                </div>
+
+
+                <div class="control">
+
+                    <span>
+                        Drawdown Protection
+                    </span>
+
+                    <input
+                        type="checkbox"
+                        checked
+                        onchange="toggleControl('second','drawdown',this.checked)"
+                    >
+
                 </div>
 
 
                 <br>
 
-                <h3>Risk Settings</h3>
+                <h3>
+                    Risk Settings
+                </h3>
+
 
                 <div class="control">
-                    <span>Risk %</span>
+
+                    <span>
+                        Risk %
+                    </span>
+
                     <input
                         type="number"
                         id="second-risk"
                         value="1"
                         min="0"
-                        step="0.1">
+                        step="0.1"
+                    >
+
                 </div>
 
+
                 <div class="control">
-                    <span>Daily Target %</span>
+
+                    <span>
+                        Daily Target %
+                    </span>
+
                     <input
                         type="number"
                         id="second-target"
                         value="1"
                         min="0"
-                        step="0.1">
+                        step="0.1"
+                    >
+
                 </div>
 
+
                 <div class="control">
-                    <span>Daily Loss %</span>
+
+                    <span>
+                        Daily Loss %
+                    </span>
+
                     <input
                         type="number"
                         id="second-loss"
                         value="1"
                         min="0"
-                        step="0.1">
+                        step="0.1"
+                    >
+
                 </div>
+
 
                 <br>
 
                 <button
                     class="blue"
                     onclick="subscribeDemo()">
-                       🧪 SUBSCRIBE DEMO TEST
+                    🧪 SUBSCRIBE DEMO TEST
                 </button>
 
             </div>
@@ -786,43 +1209,19 @@
         </div>
 
 
-        <!-- ACTIVITY CHART -->
+        <!-- CUSTOMERS -->
 
-        <div class="card">
+        <div
+            class="card"
+            id="customers">
 
-            <h2>Bot Activity</h2>
+            <h2>
+                Customers
+            </h2>
 
-            <div class="chart">
-
-                <div class="bar" style="height:35%"></div>
-                <div class="bar" style="height:50%"></div>
-                <div class="bar" style="height:42%"></div>
-                <div class="bar" style="height:65%"></div>
-                <div class="bar" style="height:55%"></div>
-                <div class="bar" style="height:75%"></div>
-                <div class="bar" style="height:68%"></div>
-                <div class="bar" style="height:88%"></div>
-                <div class="bar" style="height:70%"></div>
-                <div class="bar" style="height:92%"></div>
-
-            </div>
-
-            <div class="chart-labels">
-                <span>12 AM</span>
-                <span>6 AM</span>
-                <span>12 PM</span>
-                <span>6 PM</span>
-                <span>NOW</span>
-            </div>
-
-        </div>
-
-
-        <!-- SUBSCRIBERS -->
-
-        <div class="card">
-
-            <h2>Subscribers</h2>
+            <p class="customer-help">
+                Registered customers from ZK Traders Bot database.
+            </p>
 
             <br>
 
@@ -833,63 +1232,215 @@
                     <thead>
 
                     <tr>
-                        <th>User</th>
-                        <th>Account</th>
-                        <th>Plan</th>
-                        <th>Status</th>
-                        <th>Start</th>
-                        <th>Expiry</th>
-                        <th>Days Left</th>
-                        <th>Payment</th>
+                        <th>
+                            Customer ID
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                        <th>
+                            Created
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
                     </tr>
 
                     </thead>
 
+
+                    <tbody
+                        id="customers-list">
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                style="text-align:center;color:#8190a2;">
+                                Loading customers...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVITY CHART -->
+
+        <div
+            class="card"
+            id="analytics">
+
+            <h2>
+                Bot Activity
+            </h2>
+
+            <div class="chart">
+
+                <div
+                    class="bar"
+                    style="height:35%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:50%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:42%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:65%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:55%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:75%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:68%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:88%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:70%">
+                </div>
+
+                <div
+                    class="bar"
+                    style="height:92%">
+                </div>
+
+            </div>
+
+
+            <div class="chart-labels">
+
+                <span>
+                    12 AM
+                </span>
+
+                <span>
+                    6 AM
+                </span>
+
+                <span>
+                    12 PM
+                </span>
+
+                <span>
+                    6 PM
+                </span>
+
+                <span>
+                    NOW
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUBSCRIBERS -->
+
+        <div
+            class="card"
+            id="subscribers">
+
+            <h2>
+                Subscribers
+            </h2>
+
+            <p class="customer-help">
+                Subscription records will appear here after activation.
+            </p>
+
+            <br>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            User
+                        </th>
+
+                        <th>
+                            Account
+                        </th>
+
+                        <th>
+                            Plan
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Start
+                        </th>
+
+                        <th>
+                            Expiry
+                        </th>
+
+                        <th>
+                            Days Left
+                        </th>
+
+                        <th>
+                            Payment
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
                     <tbody>
 
                     <tr>
-                        <td>user_001</td>
-                        <td>Premium</td>
-                        <td>30 Days</td>
-                        <td>
-                            <span class="badge badge-active">
-                                ACTIVE
-                            </span>
-                        </td>
-                        <td>04 Sep 2026</td>
-                        <td>04 Oct 2026</td>
-                        <td>23</td>
-                        <td class="green">Verified</td>
-                    </tr>
 
-                    <tr>
-                        <td>user_002</td>
-                        <td>Premium</td>
-                        <td>30 Days</td>
-                        <td>
-                            <span class="badge badge-active">
-                                ACTIVE
-                            </span>
+                        <td
+                            colspan="8"
+                            style="text-align:center;color:#8190a2;">
+                            No subscription records yet.
                         </td>
-                        <td>10 Sep 2026</td>
-                        <td>10 Oct 2026</td>
-                        <td>29</td>
-                        <td class="green">Verified</td>
-                    </tr>
 
-                    <tr>
-                        <td>user_003</td>
-                        <td>Second</td>
-                        <td>30 Days</td>
-                        <td>
-                            <span class="badge badge-expired">
-                                EXPIRED
-                            </span>
-                        </td>
-                        <td>01 Aug 2026</td>
-                        <td>31 Aug 2026</td>
-                        <td>0</td>
-                        <td class="red">Renew</td>
                     </tr>
 
                     </tbody>
@@ -905,11 +1456,16 @@
 
         <div class="card">
 
-            <h2>Global Safety</h2>
+            <h2>
+                Global Safety
+            </h2>
+
 
             <div class="control">
 
-                <span>Emergency System Stop</span>
+                <span>
+                    Emergency System Stop
+                </span>
 
                 <button
                     class="stop"
@@ -919,9 +1475,12 @@
 
             </div>
 
+
             <div class="control">
 
-                <span>System Protection</span>
+                <span>
+                    System Protection
+                </span>
 
                 <span class="green">
                     ACTIVE
@@ -929,9 +1488,12 @@
 
             </div>
 
+
             <div class="control">
 
-                <span>Cloudflare API</span>
+                <span>
+                    Cloudflare API
+                </span>
 
                 <span class="green">
                     ● ONLINE
@@ -946,15 +1508,151 @@
 
         <div class="card">
 
-            <h2>Activity Logs</h2>
+            <h2>
+                Activity Logs
+            </h2>
 
             <br>
 
-            <p>● System initialized successfully.</p>
-            <p>● Premium account control ready.</p>
-            <p>● Demo Account Test control ready.</p>
-            <p>● Cloudflare Worker API ready.</p>
-            <p>● Waiting for MT5 EA connection...</p>
+            <p>
+                ● System initialized successfully.
+            </p>
+
+            <p>
+                ● Premium account control ready.
+            </p>
+
+            <p>
+                ● Demo Account Test control ready.
+            </p>
+
+            <p>
+                ● Cloudflare Worker API ready.
+            </p>
+
+            <p>
+                ● Waiting for MT5 EA connection...
+            </p>
+
+        </div>
+
+
+        <!-- SETTINGS -->
+
+        <div
+            class="card"
+            id="settings">
+
+            <h2>
+                Settings
+            </h2>
+
+            <p class="customer-help">
+                Admin settings and system configuration.
+            </p>
+
+            <div class="control">
+
+                <span>
+                    Premium Price
+                </span>
+
+                <strong class="cyan">
+                    Rs 5,000
+                </strong>
+
+            </div>
+
+            <div class="control">
+
+                <span>
+                    Subscription Duration
+                </span>
+
+                <strong>
+                    30 Days
+                </strong>
+
+            </div>
+
+            <div class="control">
+
+                <span>
+                    Payment Method
+                </span>
+
+                <strong class="cyan">
+                    JazzCash
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- CUSTOMER ACCESS -->
+
+        <div
+            class="card customer-access">
+
+            <h2>
+                Customer Account
+            </h2>
+
+            <p class="customer-help">
+                Login or create your ZK Traders Bot account.
+            </p>
+
+
+            <div style="margin-top:20px;">
+
+                <label>
+                    Email / Gmail
+                </label>
+
+                <input
+                    type="email"
+                    id="customer-email"
+                    class="customer-input"
+                    placeholder="Enter your Gmail"
+                >
+
+            </div>
+
+
+            <div style="margin-top:15px;">
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="customer-password"
+                    class="customer-input"
+                    placeholder="Enter password"
+                >
+
+            </div>
+
+
+            <div
+                class="buttons"
+                style="margin-top:20px;">
+
+                <button
+                    class="blue"
+                    onclick="customerLogin()">
+                    LOGIN
+                </button>
+
+                <button
+                    class="start"
+                    onclick="customerRegister()">
+                    CREATE ACCOUNT
+                </button>
+
+            </div>
 
         </div>
 
@@ -975,59 +1673,8 @@
 
 
 <script src="app.js"></script>
-<!-- CUSTOMER ACCESS -->
 
-<div class="card" style="max-width:600px;margin:30px auto;">
-
-    <h2>Customer Account</h2>
-
-    <p style="color:#8190a2;">
-        Login or create your ZK Traders Bot account.
-    </p>
-
-    <div style="margin-top:20px;">
-
-        <label>Email / Gmail</label>
-
-        <input
-            type="email"
-            id="customer-email"
-            placeholder="Enter your Gmail"
-            style="width:100%;margin-top:8px;padding:12px;background:#080d14;color:white;border:1px solid #293646;border-radius:7px;"
-        >
-
-    </div>
-
-    <div style="margin-top:15px;">
-
-        <label>Password</label>
-
-        <input
-            type="password"
-            id="customer-password"
-            placeholder="Enter password"
-            style="width:100%;margin-top:8px;padding:12px;background:#080d14;color:white;border:1px solid #293646;border-radius:7px;"
-        >
-
-    </div>
-
-    <div class="buttons" style="margin-top:20px;">
-
-        <button
-            class="blue"
-            onclick="customerLogin()">
-            LOGIN
-        </button>
-
-        <button
-            class="start"
-            onclick="customerRegister()">
-            CREATE ACCOUNT
-        </button>
-
-    </div>
-
-</div>
 </body>
+
 </html>
 ```
