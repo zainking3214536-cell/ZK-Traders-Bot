@@ -256,37 +256,14 @@ async function customerLogin() {
     const password =
         document.getElementById("customer-password").value;
 
-    if (!email || !password) {
-        alert("Email aur password enter karein.");
-        return;
-    }
-
-    try {
-        const response = await fetch(
-            API_URL + "/auth/login",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                     "Authorization":
-        "Bearer " +
-        localStorage.getItem("ZK_customer_token")
-                },
-                body: JSON.stringify({
-                    account: account,
-        command: command
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        console.log("ZK Login:", data);
-
-        if (!response.ok || !data.ok) {
-            alert(data.error || "Login failed.");
-            return;
-        }
+   headers: {
+    "Content-Type": "application/json"
+    
+},
+body: JSON.stringify({
+    email: email,
+    password: password
+})
 
         localStorage.setItem("ZK_customer_token", data.token);
         localStorage.setItem("ZK_customer_id", data.customer_id);
