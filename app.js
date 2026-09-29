@@ -268,10 +268,13 @@ async function customerLogin() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
+                     "Authorization":
+        "Bearer " +
+        localStorage.getItem("ZK_customer_token")
                 },
                 body: JSON.stringify({
-                    email: email,
-                    password: password
+                    account: account,
+        command: command
                 })
             }
         );
