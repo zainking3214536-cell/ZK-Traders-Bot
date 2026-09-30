@@ -740,9 +740,158 @@ function renderCustomers(
 // VIEW CUSTOMER
 // ======================================================
 
-function viewCustomer(
-    customer
-) {
+function viewCustomer(customer) {
+
+    const panel =
+        document.getElementById(
+            "customer-details-panel"
+        );
+
+    if (!panel) {
+        console.warn(
+            "Customer details panel not found."
+        );
+        return;
+    }
+
+
+    // CUSTOMER INFORMATION
+
+    document.getElementById(
+        "detail-customer-id"
+    ).textContent =
+        customer.customer_id ??
+        customer.id ??
+        "-";
+
+
+    document.getElementById(
+        "detail-email"
+    ).textContent =
+        customer.email ??
+        "-";
+
+
+    document.getElementById(
+        "detail-role"
+    ).textContent =
+        customer.role ??
+        "customer";
+
+
+    document.getElementById(
+        "detail-status"
+    ).textContent =
+        customer.status ??
+        customer.subscription_status ??
+        "Active";
+
+
+    const created =
+        customer.created_at ??
+        customer.created ??
+        "-";
+
+    document.getElementById(
+        "detail-created"
+    ).textContent =
+        created !== "-"
+            ? new Date(created).toLocaleString()
+            : "-";
+
+
+    // ACCOUNT INFORMATION
+
+    document.getElementById(
+        "detail-account"
+    ).textContent =
+        customer.account ??
+        customer.mt5_account ??
+        "-";
+
+
+    document.getElementById(
+        "detail-broker"
+    ).textContent =
+        customer.broker ??
+        customer.broker_name ??
+        "-";
+
+
+    document.getElementById(
+        "detail-account-type"
+    ).textContent =
+        customer.account_type ??
+        "-";
+
+
+    // SUBSCRIPTION INFORMATION
+
+    document.getElementById(
+        "detail-plan"
+    ).textContent =
+        customer.plan ??
+        customer.subscription ??
+        "-";
+
+
+    document.getElementById(
+        "detail-subscription-status"
+    ).textContent =
+        customer.subscription_status ??
+        customer.status ??
+        "Active";
+
+
+    document.getElementById(
+        "detail-start"
+    ).textContent =
+        customer.start_date ??
+        customer.subscription_start ??
+        "-";
+
+
+    document.getElementById(
+        "detail-expiry"
+    ).textContent =
+        customer.expires_at ??
+        customer.expiry ??
+        "-";
+
+
+    document.getElementById(
+        "detail-days-left"
+    ).textContent =
+        customer.days_left ??
+        "-";
+
+
+    // PAYMENT INFORMATION
+
+    document.getElementById(
+        "detail-payment-method"
+    ).textContent =
+        customer.payment_method ??
+        "JazzCash";
+
+
+    document.getElementById(
+        "detail-payment-status"
+    ).textContent =
+        customer.payment_status ??
+        "-";
+
+
+    // SHOW PANEL
+
+    panel.style.display =
+        "block";
+
+    panel.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
 
     const customerId =
         customer.customer_id ??
@@ -1376,6 +1525,9 @@ window.renderCustomers =
 
 window.viewCustomer =
     viewCustomer;
+
+window.closeCustomerDetails =
+    closeCustomerDetails;
 
 window.refreshCustomers =
     refreshCustomers;
