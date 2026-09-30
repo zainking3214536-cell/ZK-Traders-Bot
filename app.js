@@ -581,6 +581,9 @@ function renderCustomers(customers) {
         const row =
             document.createElement("tr");
 
+
+        // CUSTOMER ID
+
         const idCell =
             document.createElement("td");
 
@@ -590,6 +593,8 @@ function renderCustomers(customers) {
             "-";
 
 
+        // EMAIL
+
         const emailCell =
             document.createElement("td");
 
@@ -598,6 +603,8 @@ function renderCustomers(customers) {
             "-";
 
 
+        // ROLE
+
         const roleCell =
             document.createElement("td");
 
@@ -605,6 +612,8 @@ function renderCustomers(customers) {
             customer.role ??
             "customer";
 
+
+        // CREATED
 
         const createdCell =
             document.createElement("td");
@@ -620,6 +629,8 @@ function renderCustomers(customers) {
                 : "-";
 
 
+        // STATUS
+
         const statusCell =
             document.createElement("td");
 
@@ -628,6 +639,8 @@ function renderCustomers(customers) {
             customer.subscription_status ??
             "Active";
 
+
+        // ACTION
 
         const actionCell =
             document.createElement("td");
@@ -673,220 +686,7 @@ function renderCustomers(customers) {
         );
 
 
-        row.appendChild(idCell);
-        row.appendChild(emailCell);
-        row.appendChild(roleCell);
-        row.appendChild(createdCell);
-        row.appendChild(statusCell);
-        row.appendChild(actionCell);
-
-        body.appendChild(row);
-
-    });
-}
-// ======================================================
-// VIEW CUSTOMER
-// ======================================================
-
-function viewCustomer(customer) {
-
-    const customerId =
-        customer.customer_id ??
-        customer.id ??
-        "-";
-
-    const email =
-        customer.email ??
-        "-";
-
-    const role =
-        customer.role ??
-        "customer";
-
-    const status =
-        customer.status ??
-        customer.subscription_status ??
-        "Active";
-
-    const created =
-        customer.created_at ??
-        customer.created ??
-        "-";
-
-    alert(
-        "CUSTOMER DETAILS\n\n" +
-
-        "Customer ID: " +
-        customerId +
-        "\n\n" +
-
-        "Email: " +
-        email +
-        "\n\n" +
-
-        "Role: " +
-        role +
-        "\n\n" +
-
-        "Status: " +
-        status +
-        "\n\n" +
-
-        "Created: " +
-        created
-    );
-}
-    body.innerHTML = "";
-
-    const list =
-        Array.isArray(customers)
-            ? customers
-            : [];
-
-    if (!list.length) {
-
-        const row =
-            document.createElement("tr");
-
-        const cell =
-            document.createElement("td");
-
-        cell.colSpan = 6;
-        cell.textContent =
-            "No customers found.";
-
-        cell.style.textAlign =
-            "center";
-
-        cell.style.padding =
-            "20px";
-
-        row.appendChild(cell);
-        body.appendChild(row);
-
-        return;
-    }
-
-    list.forEach(function(customer) {
-
-        const row =
-            document.createElement("tr");
-
-        // ==========================
-        // CUSTOMER ID
-        // ==========================
-
-        const idCell =
-            document.createElement("td");
-
-        idCell.textContent =
-            customer.customer_id ??
-            customer.id ??
-            "-";
-
-        // ==========================
-        // EMAIL
-        // ==========================
-
-        const emailCell =
-            document.createElement("td");
-
-        emailCell.textContent =
-            customer.email ??
-            "-";
-
-        // ==========================
-        // ROLE
-        // ==========================
-
-        const roleCell =
-            document.createElement("td");
-
-        roleCell.textContent =
-            customer.role ??
-            "customer";
-
-        // ==========================
-        // CREATED
-        // ==========================
-
-        const createdCell =
-            document.createElement("td");
-
-        const created =
-            customer.created_at ??
-            customer.created ??
-            "-";
-
-        createdCell.textContent =
-            created !== "-"
-                ? new Date(created).toLocaleString()
-                : "-";
-
-        // ==========================
-        // STATUS
-        // ==========================
-
-        const statusCell =
-            document.createElement("td");
-
-        statusCell.textContent =
-            customer.status ??
-            customer.subscription_status ??
-            "Active";
-
-        // ==========================
-        // ACTION
-        // ==========================
-
-        const actionCell =
-            document.createElement("td");
-
-        const viewButton =
-            document.createElement("button");
-
-        viewButton.textContent =
-            "VIEW";
-
-        viewButton.type =
-            "button";
-
-        viewButton.style.padding =
-            "7px 12px";
-
-        viewButton.style.border =
-            "none";
-
-        viewButton.style.borderRadius =
-            "6px";
-
-        viewButton.style.cursor =
-            "pointer";
-
-        viewButton.style.background =
-            "#2563eb";
-
-        viewButton.style.color =
-            "#ffffff";
-
-        viewButton.addEventListener(
-            "click",
-            function() {
-
-                viewCustomer(
-                    customer
-                );
-
-            }
-        );
-
-        actionCell.appendChild(
-            viewButton
-        );
-
-        // ==========================
         // ADD CELLS
-        // ==========================
 
         row.appendChild(idCell);
         row.appendChild(emailCell);
@@ -899,178 +699,6 @@ function viewCustomer(customer) {
 
     });
 }
-
-    const body =
-        findCustomersTableBody();
-
-    if (!body) {
-
-        console.warn(
-            "Customers table body not found."
-        );
-
-        return;
-    }
-
-    body.innerHTML = "";
-
-    const list =
-        Array.isArray(customers)
-            ? customers
-            : [];
-
-    if (!list.length) {
-
-        setCustomersMessage(
-            "No customers found."
-        );
-
-        return;
-    }
-
-    list.forEach(
-        function(customer) {
-
-            const row =
-                document.createElement("tr");
-
-            const values = [
-
-                customer.customer_id ??
-                customer.id ??
-                "-",
-
-                customer.email ??
-                "-",
-
-                customer.role ??
-                "customer",
-
-                customer.status ??
-                customer.subscription_status ??
-                "Active",
-
-                customer.plan ??
-                customer.subscription ??
-                "-",
-
-                customer.expires_at ??
-                customer.expiry ??
-                "-",
-
-                customer.created_at ??
-                customer.created ??
-                "-",
-
-                customer.account ??
-                customer.mt5_account ??
-                "-"
-            ];
-
-            values.forEach(
-                function(value) {
-
-                    const cell =
-                        document.createElement("td");
-
-                    cell.textContent =
-                        value === null ||
-                        value === undefined
-                            ? "-"
-                            : String(value);
-
-                    cell.style.padding =
-                        "10px";
-
-                    cell.style.verticalAlign =
-                        "middle";
-
-                    row.appendChild(cell);
-                }
-            );
-
-            body.appendChild(row);
-        }
-    );
-}
-
-
-async function loadCustomers() {
-
-    try {
-
-        const token =
-            localStorage.getItem(
-                "ZK_customer_token"
-            );
-
-        if (!token) {
-
-            console.log(
-                "Login required for customers."
-            );
-
-            return;
-        }
-
-        setCustomersMessage(
-            "Loading customers..."
-        );
-
-        const response =
-            await fetch(
-                API_URL +
-                "/customers",
-                {
-                    method: "GET",
-
-                    headers: {
-                        "Authorization":
-                            "Bearer " + token
-                    }
-                }
-            );
-
-        const data =
-            await response.json();
-
-        console.log(
-            "Customers:",
-            data
-        );
-
-        if (
-            !response.ok ||
-            !data.ok
-        ) {
-
-            console.error(
-                "Customers API error:",
-                data.error
-            );
-
-            setCustomersMessage(
-                data.error ||
-                "Unable to load customers."
-            );
-
-            return;
-        }
-
-        const customers =
-            Array.isArray(data.customers)
-                ? data.customers
-                : [];
-
-        localStorage.setItem(
-            "ZK_customers",
-
-            JSON.stringify(
-                customers
-            )
-        );
-
-        renderCustomers(
             customers
         );
 
