@@ -542,7 +542,58 @@ function renderCustomers(customers) {
         );
         return;
     }
+// ======================================================
+// VIEW CUSTOMER
+// ======================================================
 
+function viewCustomer(customer) {
+
+    const customerId =
+        customer.customer_id ??
+        customer.id ??
+        "-";
+
+    const email =
+        customer.email ??
+        "-";
+
+    const role =
+        customer.role ??
+        "customer";
+
+    const status =
+        customer.status ??
+        customer.subscription_status ??
+        "Active";
+
+    const created =
+        customer.created_at ??
+        customer.created ??
+        "-";
+
+    alert(
+        "CUSTOMER DETAILS\n\n" +
+
+        "Customer ID: " +
+        customerId +
+        "\n\n" +
+
+        "Email: " +
+        email +
+        "\n\n" +
+
+        "Role: " +
+        role +
+        "\n\n" +
+
+        "Status: " +
+        status +
+        "\n\n" +
+
+        "Created: " +
+        created
+    );
+}
     body.innerHTML = "";
 
     const list =
@@ -1379,7 +1430,8 @@ window.loadCustomers =
 
 window.renderCustomers =
     renderCustomers;
-
+window.viewCustomer =
+    viewCustomer;
 window.refreshCustomers =
     refreshCustomers;
 
