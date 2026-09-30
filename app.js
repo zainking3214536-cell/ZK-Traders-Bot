@@ -7,7 +7,15 @@ const API_URL =
 // ======================================================
 
 async function sendCommand(account, command) {
+  if (!isLoggedIn()) {
+        alert("Please login first.");
+        return false;
+    }
 
+    if (!isAdmin()) {
+        alert("Admin access required.");
+        return false;
+          }
     try {
 
         const token =
@@ -978,7 +986,31 @@ function isAdmin() {
 
     return role === "admin";
 }
+function applyRoleAccess() {
 
+    const admin = isAdmin();
+
+    const commandButtons = document.querySelectorAll(
+        'button[onclick*="sendCommand"],' +
+        'button[onclick*="setBotStatus"],' +
+        'button[onclick*="emergencyStop"]'
+    );
+
+    commandButtons.forEach(function(button) {
+
+        if (admin) {
+            button.style.display = "";
+        } else {
+            button.style.display = "none";
+        }
+
+    });
+
+    console.log(
+        "ZK Role Access:",
+        admin ? "ADMIN" : "CUSTOMER"
+    );
+}
 
 // ======================================================
 // ADMIN ACCESS CHECK
@@ -1100,7 +1132,7 @@ async function refreshDashboard() {
 // ======================================================
 
 function initializeZKDashboard() {
-
+ applyRoleAccess();
     loadSettings(
         "premium"
     );
