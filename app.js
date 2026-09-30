@@ -531,9 +531,181 @@ function setCustomersMessage(
 }
 
 
-function renderCustomers(
-    customers
-) {
+function renderCustomers(customers) {
+
+    const body =
+        findCustomersTableBody();
+
+    if (!body) {
+        console.warn(
+            "Customers table body not found."
+        );
+        return;
+    }
+
+    body.innerHTML = "";
+
+    const list =
+        Array.isArray(customers)
+            ? customers
+            : [];
+
+    if (!list.length) {
+
+        const row =
+            document.createElement("tr");
+
+        const cell =
+            document.createElement("td");
+
+        cell.colSpan = 6;
+        cell.textContent =
+            "No customers found.";
+
+        cell.style.textAlign =
+            "center";
+
+        cell.style.padding =
+            "20px";
+
+        row.appendChild(cell);
+        body.appendChild(row);
+
+        return;
+    }
+
+    list.forEach(function(customer) {
+
+        const row =
+            document.createElement("tr");
+
+        // ==========================
+        // CUSTOMER ID
+        // ==========================
+
+        const idCell =
+            document.createElement("td");
+
+        idCell.textContent =
+            customer.customer_id ??
+            customer.id ??
+            "-";
+
+        // ==========================
+        // EMAIL
+        // ==========================
+
+        const emailCell =
+            document.createElement("td");
+
+        emailCell.textContent =
+            customer.email ??
+            "-";
+
+        // ==========================
+        // ROLE
+        // ==========================
+
+        const roleCell =
+            document.createElement("td");
+
+        roleCell.textContent =
+            customer.role ??
+            "customer";
+
+        // ==========================
+        // CREATED
+        // ==========================
+
+        const createdCell =
+            document.createElement("td");
+
+        const created =
+            customer.created_at ??
+            customer.created ??
+            "-";
+
+        createdCell.textContent =
+            created !== "-"
+                ? new Date(created).toLocaleString()
+                : "-";
+
+        // ==========================
+        // STATUS
+        // ==========================
+
+        const statusCell =
+            document.createElement("td");
+
+        statusCell.textContent =
+            customer.status ??
+            customer.subscription_status ??
+            "Active";
+
+        // ==========================
+        // ACTION
+        // ==========================
+
+        const actionCell =
+            document.createElement("td");
+
+        const viewButton =
+            document.createElement("button");
+
+        viewButton.textContent =
+            "VIEW";
+
+        viewButton.type =
+            "button";
+
+        viewButton.style.padding =
+            "7px 12px";
+
+        viewButton.style.border =
+            "none";
+
+        viewButton.style.borderRadius =
+            "6px";
+
+        viewButton.style.cursor =
+            "pointer";
+
+        viewButton.style.background =
+            "#2563eb";
+
+        viewButton.style.color =
+            "#ffffff";
+
+        viewButton.addEventListener(
+            "click",
+            function() {
+
+                viewCustomer(
+                    customer
+                );
+
+            }
+        );
+
+        actionCell.appendChild(
+            viewButton
+        );
+
+        // ==========================
+        // ADD CELLS
+        // ==========================
+
+        row.appendChild(idCell);
+        row.appendChild(emailCell);
+        row.appendChild(roleCell);
+        row.appendChild(createdCell);
+        row.appendChild(statusCell);
+        row.appendChild(actionCell);
+
+        body.appendChild(row);
+
+    });
+}
 
     const body =
         findCustomersTableBody();
