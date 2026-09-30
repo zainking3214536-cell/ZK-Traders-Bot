@@ -7,7 +7,8 @@ const API_URL =
 // ======================================================
 
 async function sendCommand(account, command) {
-  if (!isLoggedIn()) {
+
+    if (!isLoggedIn()) {
         alert("Please login first.");
         return false;
     }
@@ -15,7 +16,8 @@ async function sendCommand(account, command) {
     if (!isAdmin()) {
         alert("Admin access required.");
         return false;
-          }
+    }
+
     try {
 
         const token =
@@ -94,6 +96,10 @@ async function sendCommand(account, command) {
 }
 
 
+// ======================================================
+// BOT STATUS
+// ======================================================
+
 function updateStatus(
     account,
     status
@@ -136,7 +142,8 @@ function setBotStatus(
     status
 ) {
 
-    let command = status;
+    let command =
+        status;
 
     if (status === "PAUSED") {
         command = "PAUSE";
@@ -376,6 +383,26 @@ function subscribeDemo() {
 }
 
 
+function showPremiumSubscription() {
+
+    alert(
+        "Premium Subscription\n\n" +
+        "Price: Rs 5,000\n" +
+        "Duration: 30 Days\n" +
+        "Payment: JazzCash"
+    );
+}
+
+
+function showDemoSubscription() {
+
+    alert(
+        "Demo Account Test\n\n" +
+        "Demo account testing subscription."
+    );
+}
+
+
 // ======================================================
 // SUBSCRIBER COUNT
 // ======================================================
@@ -464,15 +491,15 @@ function findCustomersTableBody() {
 
     return (
         document.getElementById(
+            "customers-list"
+        ) ||
+
+        document.getElementById(
             "customers-table-body"
         ) ||
 
         document.getElementById(
             "customersTableBody"
-        ) ||
-
-        document.getElementById(
-            "customers-list"
         ) ||
 
         document.querySelector(
@@ -514,7 +541,7 @@ function setCustomersMessage(
     const cell =
         document.createElement("td");
 
-    cell.colSpan = 8;
+    cell.colSpan = 6;
 
     cell.textContent =
         message;
@@ -531,15 +558,19 @@ function setCustomersMessage(
 }
 
 
-function renderCustomers(customers) {
+function renderCustomers(
+    customers
+) {
 
     const body =
         findCustomersTableBody();
 
     if (!body) {
+
         console.warn(
             "Customers table body not found."
         );
+
         return;
     }
 
@@ -552,153 +583,299 @@ function renderCustomers(customers) {
 
     if (!list.length) {
 
-        const row =
-            document.createElement("tr");
-
-        const cell =
-            document.createElement("td");
-
-        cell.colSpan = 6;
-
-        cell.textContent =
-            "No customers found.";
-
-        cell.style.textAlign =
-            "center";
-
-        cell.style.padding =
-            "20px";
-
-        row.appendChild(cell);
-
-        body.appendChild(row);
+        setCustomersMessage(
+            "No customers found."
+        );
 
         return;
     }
 
-    list.forEach(function(customer) {
+    list.forEach(
+        function(customer) {
 
-        const row =
-            document.createElement("tr");
-
-
-        // CUSTOMER ID
-
-        const idCell =
-            document.createElement("td");
-
-        idCell.textContent =
-            customer.customer_id ??
-            customer.id ??
-            "-";
+            const row =
+                document.createElement("tr");
 
 
-        // EMAIL
+            // CUSTOMER ID
 
-        const emailCell =
-            document.createElement("td");
+            const idCell =
+                document.createElement("td");
 
-        emailCell.textContent =
-            customer.email ??
-            "-";
-
-
-        // ROLE
-
-        const roleCell =
-            document.createElement("td");
-
-        roleCell.textContent =
-            customer.role ??
-            "customer";
+            idCell.textContent =
+                customer.customer_id ??
+                customer.id ??
+                "-";
 
 
-        // CREATED
+            // EMAIL
 
-        const createdCell =
-            document.createElement("td");
+            const emailCell =
+                document.createElement("td");
 
-        const created =
-            customer.created_at ??
-            customer.created ??
-            "-";
-
-        createdCell.textContent =
-            created !== "-"
-                ? new Date(created).toLocaleString()
-                : "-";
+            emailCell.textContent =
+                customer.email ??
+                "-";
 
 
-        // STATUS
+            // ROLE
 
-        const statusCell =
-            document.createElement("td");
+            const roleCell =
+                document.createElement("td");
 
-        statusCell.textContent =
-            customer.status ??
-            customer.subscription_status ??
-            "Active";
-
-
-        // ACTION
-
-        const actionCell =
-            document.createElement("td");
-
-        const viewButton =
-            document.createElement("button");
-
-        viewButton.textContent =
-            "VIEW";
-
-        viewButton.type =
-            "button";
-
-        viewButton.style.padding =
-            "7px 12px";
-
-        viewButton.style.border =
-            "none";
-
-        viewButton.style.borderRadius =
-            "6px";
-
-        viewButton.style.cursor =
-            "pointer";
-
-        viewButton.style.background =
-            "#2563eb";
-
-        viewButton.style.color =
-            "#ffffff";
-
-        viewButton.addEventListener(
-            "click",
-            function() {
-
-                viewCustomer(customer);
-
-            }
-        );
-
-        actionCell.appendChild(
-            viewButton
-        );
+            roleCell.textContent =
+                customer.role ??
+                "customer";
 
 
-        // ADD CELLS
+            // CREATED
 
-        row.appendChild(idCell);
-        row.appendChild(emailCell);
-        row.appendChild(roleCell);
-        row.appendChild(createdCell);
-        row.appendChild(statusCell);
-        row.appendChild(actionCell);
+            const createdCell =
+                document.createElement("td");
 
-        body.appendChild(row);
+            const created =
+                customer.created_at ??
+                customer.created ??
+                "-";
 
-    });
+            createdCell.textContent =
+                created !== "-"
+                    ? new Date(created).toLocaleString()
+                    : "-";
+
+
+            // STATUS
+
+            const statusCell =
+                document.createElement("td");
+
+            statusCell.textContent =
+                customer.status ??
+                customer.subscription_status ??
+                "Active";
+
+
+            // ACTION
+
+            const actionCell =
+                document.createElement("td");
+
+            const viewButton =
+                document.createElement("button");
+
+            viewButton.textContent =
+                "VIEW";
+
+            viewButton.type =
+                "button";
+
+            viewButton.style.padding =
+                "7px 12px";
+
+            viewButton.style.border =
+                "none";
+
+            viewButton.style.borderRadius =
+                "6px";
+
+            viewButton.style.cursor =
+                "pointer";
+
+            viewButton.style.background =
+                "#2563eb";
+
+            viewButton.style.color =
+                "#ffffff";
+
+            viewButton.addEventListener(
+                "click",
+                function() {
+
+                    viewCustomer(
+                        customer
+                    );
+
+                }
+            );
+
+            actionCell.appendChild(
+                viewButton
+            );
+
+
+            row.appendChild(
+                idCell
+            );
+
+            row.appendChild(
+                emailCell
+            );
+
+            row.appendChild(
+                roleCell
+            );
+
+            row.appendChild(
+                createdCell
+            );
+
+            row.appendChild(
+                statusCell
+            );
+
+            row.appendChild(
+                actionCell
+            );
+
+            body.appendChild(
+                row
+            );
+
+        }
+    );
 }
+
+
+// ======================================================
+// VIEW CUSTOMER
+// ======================================================
+
+function viewCustomer(
+    customer
+) {
+
+    const customerId =
+        customer.customer_id ??
+        customer.id ??
+        "-";
+
+    const email =
+        customer.email ??
+        "-";
+
+    const role =
+        customer.role ??
+        "customer";
+
+    const status =
+        customer.status ??
+        customer.subscription_status ??
+        "Active";
+
+    const created =
+        customer.created_at ??
+        customer.created ??
+        "-";
+
+    alert(
+        "CUSTOMER DETAILS\n\n" +
+
+        "Customer ID: " +
+        customerId +
+
+        "\n\n" +
+
+        "Email: " +
+        email +
+
+        "\n\n" +
+
+        "Role: " +
+        role +
+
+        "\n\n" +
+
+        "Status: " +
+        status +
+
+        "\n\n" +
+
+        "Created: " +
+        created
+    );
+}
+
+
+// ======================================================
+// LOAD CUSTOMERS
+// ======================================================
+
+async function loadCustomers() {
+
+    try {
+
+        const token =
+            localStorage.getItem(
+                "ZK_customer_token"
+            );
+
+        if (!token) {
+
+            console.log(
+                "Login required for customers."
+            );
+
+            return;
+        }
+
+        setCustomersMessage(
+            "Loading customers..."
+        );
+
+        const response =
+            await fetch(
+                API_URL +
+                "/customers",
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Customers:",
+            data
+        );
+
+        if (
+            !response.ok ||
+            !data.ok
+        ) {
+
+            console.error(
+                "Customers API error:",
+                data.error
+            );
+
+            setCustomersMessage(
+                data.error ||
+                "Unable to load customers."
+            );
+
+            return;
+        }
+
+        const customers =
+            Array.isArray(data.customers)
+                ? data.customers
+                : [];
+
+        localStorage.setItem(
+            "ZK_customers",
+
+            JSON.stringify(
+                customers
+            )
+        );
+
+        renderCustomers(
             customers
         );
 
@@ -714,6 +891,8 @@ function renderCustomers(customers) {
         );
     }
 }
+
+
 // ======================================================
 // CUSTOMER LOGIN
 // ======================================================
@@ -935,7 +1114,7 @@ function customerLogout() {
 
 
 // ======================================================
-// CURRENT LOGIN INFORMATION
+// LOGIN INFORMATION
 // ======================================================
 
 function getCurrentCustomer() {
@@ -979,31 +1158,49 @@ function isAdmin() {
 
     return role === "admin";
 }
+
+
+// ======================================================
+// ROLE ACCESS
+// ======================================================
+
 function applyRoleAccess() {
 
-    const admin = isAdmin();
+    const admin =
+        isAdmin();
 
-    const commandButtons = document.querySelectorAll(
-        'button[onclick*="sendCommand"],' +
-        'button[onclick*="setBotStatus"],' +
-        'button[onclick*="emergencyStop"]'
-    );
+    const commandButtons =
+        document.querySelectorAll(
+            'button[onclick*="sendCommand"],' +
+            'button[onclick*="setBotStatus"],' +
+            'button[onclick*="emergencyStop"]'
+        );
 
-    commandButtons.forEach(function(button) {
+    commandButtons.forEach(
+        function(button) {
 
-        if (admin) {
-            button.style.display = "";
-        } else {
-            button.style.display = "none";
+            if (admin) {
+
+                button.style.display =
+                    "";
+
+            } else {
+
+                button.style.display =
+                    "none";
+            }
+
         }
-
-    });
+    );
 
     console.log(
         "ZK Role Access:",
-        admin ? "ADMIN" : "CUSTOMER"
+        admin
+            ? "ADMIN"
+            : "CUSTOMER"
     );
 }
+
 
 // ======================================================
 // ADMIN ACCESS CHECK
@@ -1034,31 +1231,7 @@ function requireAdmin() {
 
 
 // ======================================================
-// SUBSCRIPTION DISPLAY
-// ======================================================
-
-function showPremiumSubscription() {
-
-    alert(
-        "Premium Subscription\n\n" +
-        "Price: Rs 5,000\n" +
-        "Duration: 30 Days\n" +
-        "Payment: JazzCash"
-    );
-}
-
-
-function showDemoSubscription() {
-
-    alert(
-        "Demo Account Test\n\n" +
-        "Demo account testing subscription."
-    );
-}
-
-
-// ======================================================
-// CUSTOMER DATA FROM LOCAL STORAGE
+// SAVED CUSTOMERS
 // ======================================================
 
 function getSavedCustomers() {
@@ -1094,19 +1267,14 @@ function getSavedCustomers() {
 
 
 // ======================================================
-// REFRESH CUSTOMERS
+// REFRESH
 // ======================================================
 
 async function refreshCustomers() {
 
     await loadCustomers();
-
 }
 
-
-// ======================================================
-// REFRESH DASHBOARD
-// ======================================================
 
 async function refreshDashboard() {
 
@@ -1115,17 +1283,19 @@ async function refreshDashboard() {
     }
 
     await loadSubscriberCount();
-    await loadCustomers();
 
+    await loadCustomers();
 }
 
 
 // ======================================================
-// PAGE INITIALIZATION
+// INITIALIZATION
 // ======================================================
 
 function initializeZKDashboard() {
- applyRoleAccess();
+
+    applyRoleAccess();
+
     loadSettings(
         "premium"
     );
@@ -1137,6 +1307,7 @@ function initializeZKDashboard() {
     if (isLoggedIn()) {
 
         loadSubscriberCount();
+
         loadCustomers();
     }
 
@@ -1144,13 +1315,15 @@ function initializeZKDashboard() {
         "ZK Traders Bot Dashboard loaded."
     );
 }
+
+
 // ======================================================
 // DOM READY
 // ======================================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    function() {
 
         initializeZKDashboard();
 
@@ -1200,8 +1373,10 @@ window.loadCustomers =
 
 window.renderCustomers =
     renderCustomers;
+
 window.viewCustomer =
     viewCustomer;
+
 window.refreshCustomers =
     refreshCustomers;
 
