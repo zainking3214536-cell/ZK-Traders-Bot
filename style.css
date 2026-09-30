@@ -595,3 +595,325 @@ min-height: auto;
 ```
 
 }
+/* =========================================
+   FINAL MOBILE FIX
+   Overrides inline CSS from index.html
+========================================= */
+
+@media (max-width: 700px) {
+
+    html,
+    body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .app {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* MOBILE SIDEBAR */
+
+    .sidebar {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        bottom: auto !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+        min-height: auto !important;
+
+        padding: 10px !important;
+
+        border-right: none !important;
+        border-bottom: 1px solid #202a38 !important;
+
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+
+        white-space: nowrap !important;
+    }
+
+    /* MOBILE LOGO */
+
+    .logo {
+        display: block !important;
+        width: auto !important;
+        font-size: 18px !important;
+        padding: 8px !important;
+        margin: 0 0 8px 0 !important;
+    }
+
+    .logo:after {
+        display: none !important;
+    }
+
+    /* MOBILE NAVIGATION */
+
+    .nav-item {
+        display: inline-block !important;
+        width: auto !important;
+
+        font-size: 12px !important;
+        text-align: left !important;
+
+        padding: 9px 11px !important;
+        margin: 2px !important;
+
+        white-space: nowrap !important;
+    }
+
+    /* MAIN CONTENT */
+
+    .main {
+        display: block !important;
+
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding: 14px !important;
+
+        overflow-x: hidden !important;
+    }
+
+    /* HEADER */
+
+    .header {
+        width: 100% !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+
+        align-items: flex-start !important;
+        gap: 10px !important;
+
+        margin-bottom: 18px !important;
+    }
+
+    .header h1 {
+        font-size: 24px !important;
+        line-height: 1.2 !important;
+    }
+
+    .header p {
+        font-size: 13px !important;
+    }
+
+    .status-online {
+        max-width: 100% !important;
+    }
+
+    /* STATISTICS */
+
+    .cards {
+        width: 100% !important;
+
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+
+        gap: 12px !important;
+    }
+
+    .card {
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding: 15px !important;
+        margin-bottom: 12px !important;
+
+        min-width: 0 !important;
+    }
+
+    /* ACCOUNT AREA */
+
+    .account-grid {
+        width: 100% !important;
+
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+
+        gap: 12px !important;
+    }
+
+    /* ACCOUNT HEADER */
+
+    .account-header {
+        width: 100% !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+
+    /* BOT BUTTONS */
+
+    .buttons {
+        width: 100% !important;
+
+        display: flex !important;
+        flex-wrap: wrap !important;
+
+        gap: 6px !important;
+    }
+
+    .buttons button {
+        min-height: 44px !important;
+        padding: 10px 12px !important;
+        margin: 0 !important;
+    }
+
+    /* CONTROL ROWS */
+
+    .control {
+        width: 100% !important;
+
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+
+        gap: 12px !important;
+
+        min-width: 0 !important;
+    }
+
+    .control span {
+        min-width: 0 !important;
+        max-width: calc(100% - 60px) !important;
+    }
+
+    .control input[type="number"] {
+        width: 80px !important;
+        min-width: 80px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* SUBSCRIPTION */
+
+    .subscription-grid {
+        width: 100% !important;
+
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+
+        gap: 10px !important;
+    }
+
+    .subscription-title {
+        display: flex !important;
+        flex-direction: column !important;
+
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    .subscription-price {
+        font-size: 30px !important;
+    }
+
+    .subscription-details {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    .subscription-box,
+    .subscription-detail {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .subscribe-button {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* TABLES */
+
+    .table-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    table {
+        min-width: 700px !important;
+        width: 700px !important;
+    }
+
+    /* CUSTOMER LOGIN */
+
+    .customer-access {
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin: 15px 0 !important;
+    }
+
+    .customer-input {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* CHART */
+
+    .chart {
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    .main {
+        padding: 10px !important;
+    }
+
+    .sidebar {
+        padding: 8px !important;
+    }
+
+    .nav-item {
+        font-size: 11px !important;
+        padding: 8px 9px !important;
+    }
+
+    .header h1 {
+        font-size: 21px !important;
+    }
+
+    .card {
+        padding: 13px !important;
+    }
+
+    .buttons {
+        flex-direction: column !important;
+    }
+
+    .buttons button {
+        width: 100% !important;
+    }
+
+    .control {
+        align-items: flex-start !important;
+    }
+
+    .control input[type="number"] {
+        width: 75px !important;
+        min-width: 75px !important;
+    }
+}
