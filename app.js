@@ -2,6 +2,10 @@ const API_URL =
     "https://nameless-waterfall-e777.zainking3214536.workers.dev";
 
 
+// ======================================================
+// ZK TRADERS BOT - COMMAND CONTROL
+// ======================================================
+
 async function sendCommand(account, command) {
 
     try {
@@ -41,7 +45,10 @@ async function sendCommand(account, command) {
             data
         );
 
-        if (!response.ok || !data.ok) {
+        if (
+            !response.ok ||
+            !data.ok
+        ) {
 
             alert(
                 "API Error: " +
@@ -163,6 +170,10 @@ function emergencyStop(
 }
 
 
+// ======================================================
+// BOT CONTROL SETTINGS
+// ======================================================
+
 function toggleControl(
     account,
     control,
@@ -186,12 +197,17 @@ function toggleControl(
         account +
         "_" +
         control,
+
         enabled
             ? "ON"
             : "OFF"
     );
 }
 
+
+// ======================================================
+// ACCOUNT SETTINGS
+// ======================================================
 
 function saveSettings(
     account
@@ -217,35 +233,27 @@ function saveSettings(
 
     localStorage.setItem(
         "ZK_Traders_" + account,
-        JSON.stringify(settings)
+
+        JSON.stringify(
+            settings
+        )
     );
 
     alert(
         account +
         " settings saved.\n\n" +
+
         "Risk: " +
         settings.risk +
         "%\n" +
+
         "Daily Target: " +
         settings.dailyTarget +
         "%\n" +
+
         "Daily Loss: " +
         settings.dailyLoss +
         "%"
-    );
-}
-
-
-function addActivity(
-    account,
-    command
-) {
-
-    console.log(
-        "Activity:",
-        account,
-        command,
-        new Date().toLocaleString()
     );
 }
 
@@ -317,6 +325,28 @@ function loadSettings(
 }
 
 
+// ======================================================
+// ACTIVITY
+// ======================================================
+
+function addActivity(
+    account,
+    command
+) {
+
+    console.log(
+        "Activity:",
+        account,
+        command,
+        new Date().toLocaleString()
+    );
+}
+
+
+// ======================================================
+// SUBSCRIPTIONS
+// ======================================================
+
 function subscribePremium() {
 
     alert(
@@ -338,6 +368,10 @@ function subscribeDemo() {
 }
 
 
+// ======================================================
+// SUBSCRIBER COUNT
+// ======================================================
+
 async function loadSubscriberCount() {
 
     try {
@@ -358,7 +392,8 @@ async function loadSubscriberCount() {
 
         const response =
             await fetch(
-                API_URL + "/subscribers/count",
+                API_URL +
+                "/subscribers/count",
                 {
                     method: "GET",
 
@@ -396,7 +431,7 @@ async function loadSubscriberCount() {
             );
 
         elements.forEach(
-            function (element) {
+            function(element) {
 
                 element.textContent =
                     data.total;
@@ -413,6 +448,180 @@ async function loadSubscriberCount() {
 }
 
 
+// ======================================================
+// CUSTOMERS TABLE
+// ======================================================
+
+function findCustomersTableBody() {
+
+    return (
+        document.getElementById(
+            "customers-table-body"
+        ) ||
+
+        document.getElementById(
+            "customersTableBody"
+        ) ||
+
+        document.getElementById(
+            "customers-list"
+        ) ||
+
+        document.querySelector(
+            "#customers-table tbody"
+        ) ||
+
+        document.querySelector(
+            "#customersTable tbody"
+        ) ||
+
+        document.querySelector(
+            ".customers-table tbody"
+        )
+    );
+}
+
+
+function setCustomersMessage(
+    message
+) {
+
+    const body =
+        findCustomersTableBody();
+
+    if (!body) {
+
+        console.warn(
+            "Customers table body not found."
+        );
+
+        return;
+    }
+
+    body.innerHTML = "";
+
+    const row =
+        document.createElement("tr");
+
+    const cell =
+        document.createElement("td");
+
+    cell.colSpan = 8;
+
+    cell.textContent =
+        message;
+
+    cell.style.textAlign =
+        "center";
+
+    cell.style.padding =
+        "20px";
+
+    row.appendChild(cell);
+
+    body.appendChild(row);
+}
+
+
+function renderCustomers(
+    customers
+) {
+
+    const body =
+        findCustomersTableBody();
+
+    if (!body) {
+
+        console.warn(
+            "Customers table body not found."
+        );
+
+        return;
+    }
+
+    body.innerHTML = "";
+
+    const list =
+        Array.isArray(customers)
+            ? customers
+            : [];
+
+    if (!list.length) {
+
+        setCustomersMessage(
+            "No customers found."
+        );
+
+        return;
+    }
+
+    list.forEach(
+        function(customer) {
+
+            const row =
+                document.createElement("tr");
+
+            const values = [
+
+                customer.customer_id ??
+                customer.id ??
+                "-",
+
+                customer.email ??
+                "-",
+
+                customer.role ??
+                "customer",
+
+                customer.status ??
+                customer.subscription_status ??
+                "Active",
+
+                customer.plan ??
+                customer.subscription ??
+                "-",
+
+                customer.expires_at ??
+                customer.expiry ??
+                "-",
+
+                customer.created_at ??
+                customer.created ??
+                "-",
+
+                customer.account ??
+                customer.mt5_account ??
+                "-"
+            ];
+
+            values.forEach(
+                function(value) {
+
+                    const cell =
+                        document.createElement("td");
+
+                    cell.textContent =
+                        value === null ||
+                        value === undefined
+                            ? "-"
+                            : String(value);
+
+                    cell.style.padding =
+                        "10px";
+
+                    cell.style.verticalAlign =
+                        "middle";
+
+                    row.appendChild(cell);
+                }
+            );
+
+            body.appendChild(row);
+        }
+    );
+}
+
+
 async function loadCustomers() {
 
     try {
@@ -425,15 +634,20 @@ async function loadCustomers() {
         if (!token) {
 
             console.log(
-                "Admin login required."
+                "Login required for customers."
             );
 
             return;
         }
 
+        setCustomersMessage(
+            "Loading customers..."
+        );
+
         const response =
             await fetch(
-                API_URL + "/customers",
+                API_URL +
+                "/customers",
                 {
                     method: "GET",
 
@@ -462,14 +676,29 @@ async function loadCustomers() {
                 data.error
             );
 
+            setCustomersMessage(
+                data.error ||
+                "Unable to load customers."
+            );
+
             return;
         }
 
+        const customers =
+            Array.isArray(data.customers)
+                ? data.customers
+                : [];
+
         localStorage.setItem(
             "ZK_customers",
+
             JSON.stringify(
-                data.customers
+                customers
             )
+        );
+
+        renderCustomers(
+            customers
         );
 
     } catch (error) {
@@ -478,21 +707,27 @@ async function loadCustomers() {
             "Customers connection error:",
             error
         );
+
+        setCustomersMessage(
+            "Customers load failed."
+        );
     }
 }
-
+// ======================================================
+// CUSTOMER LOGIN
+// ======================================================
 
 async function customerLogin() {
 
     const email =
         document.getElementById(
             "customer-email"
-        ).value.trim();
+        )?.value.trim();
 
     const password =
         document.getElementById(
             "customer-password"
-        ).value;
+        )?.value;
 
     if (!email || !password) {
 
@@ -507,7 +742,8 @@ async function customerLogin() {
 
         const response =
             await fetch(
-                API_URL + "/auth/login",
+                API_URL +
+                "/auth/login",
                 {
                     method: "POST",
 
@@ -584,17 +820,21 @@ async function customerLogin() {
 }
 
 
+// ======================================================
+// CUSTOMER REGISTER
+// ======================================================
+
 async function customerRegister() {
 
     const email =
         document.getElementById(
             "customer-email"
-        ).value.trim();
+        )?.value.trim();
 
     const password =
         document.getElementById(
             "customer-password"
-        ).value;
+        )?.value;
 
     if (!email || !password) {
 
@@ -609,7 +849,8 @@ async function customerRegister() {
 
         const response =
             await fetch(
-                API_URL + "/auth/register",
+                API_URL +
+                "/auth/register",
                 {
                     method: "POST",
 
@@ -627,6 +868,11 @@ async function customerRegister() {
 
         const data =
             await response.json();
+
+        console.log(
+            "ZK Registration:",
+            data
+        );
 
         if (
             !response.ok ||
@@ -661,28 +907,238 @@ async function customerRegister() {
 }
 
 
+// ======================================================
+// LOGOUT
+// ======================================================
+
+function customerLogout() {
+
+    localStorage.removeItem(
+        "ZK_customer_token"
+    );
+
+    localStorage.removeItem(
+        "ZK_customer_id"
+    );
+
+    localStorage.removeItem(
+        "ZK_customer_role"
+    );
+
+    alert(
+        "Logout successful."
+    );
+
+    location.reload();
+}
+
+
+// ======================================================
+// CURRENT LOGIN INFORMATION
+// ======================================================
+
+function getCurrentCustomer() {
+
+    return {
+
+        token:
+            localStorage.getItem(
+                "ZK_customer_token"
+            ),
+
+        customer_id:
+            localStorage.getItem(
+                "ZK_customer_id"
+            ),
+
+        role:
+            localStorage.getItem(
+                "ZK_customer_role"
+            )
+    };
+}
+
+
+function isLoggedIn() {
+
+    return Boolean(
+        localStorage.getItem(
+            "ZK_customer_token"
+        )
+    );
+}
+
+
+function isAdmin() {
+
+    const role =
+        localStorage.getItem(
+            "ZK_customer_role"
+        );
+
+    return role === "admin";
+}
+
+
+// ======================================================
+// ADMIN ACCESS CHECK
+// ======================================================
+
+function requireAdmin() {
+
+    if (!isLoggedIn()) {
+
+        alert(
+            "Please login first."
+        );
+
+        return false;
+    }
+
+    if (!isAdmin()) {
+
+        alert(
+            "Admin access required."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+
+// ======================================================
+// SUBSCRIPTION DISPLAY
+// ======================================================
+
+function showPremiumSubscription() {
+
+    alert(
+        "Premium Subscription\n\n" +
+        "Price: Rs 5,000\n" +
+        "Duration: 30 Days\n" +
+        "Payment: JazzCash"
+    );
+}
+
+
+function showDemoSubscription() {
+
+    alert(
+        "Demo Account Test\n\n" +
+        "Demo account testing subscription."
+    );
+}
+
+
+// ======================================================
+// CUSTOMER DATA FROM LOCAL STORAGE
+// ======================================================
+
+function getSavedCustomers() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "ZK_customers"
+            );
+
+        if (!saved) {
+            return [];
+        }
+
+        const customers =
+            JSON.parse(saved);
+
+        return Array.isArray(customers)
+            ? customers
+            : [];
+
+    } catch (error) {
+
+        console.error(
+            "Saved customers error:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+// ======================================================
+// REFRESH CUSTOMERS
+// ======================================================
+
+async function refreshCustomers() {
+
+    await loadCustomers();
+
+}
+
+
+// ======================================================
+// REFRESH DASHBOARD
+// ======================================================
+
+async function refreshDashboard() {
+
+    if (!isLoggedIn()) {
+        return;
+    }
+
+    await loadSubscriberCount();
+    await loadCustomers();
+
+}
+
+
+// ======================================================
+// PAGE INITIALIZATION
+// ======================================================
+
+function initializeZKDashboard() {
+
+    loadSettings(
+        "premium"
+    );
+
+    loadSettings(
+        "second"
+    );
+
+    if (isLoggedIn()) {
+
+        loadSubscriberCount();
+        loadCustomers();
+    }
+
+    console.log(
+        "ZK Traders Bot Dashboard loaded."
+    );
+}
+// ======================================================
+// DOM READY
+// ======================================================
+
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        loadSettings(
-            "premium"
-        );
+        initializeZKDashboard();
 
-        loadSettings(
-            "second"
-        );
-
-        loadSubscriberCount();
-
-        loadCustomers();
-
-        console.log(
-            "ZK Traders Bot Dashboard loaded."
-        );
     }
 );
 
+
+// ======================================================
+// GLOBAL FUNCTIONS
+// ======================================================
+
+window.sendCommand =
+    sendCommand;
 
 window.setBotStatus =
     setBotStatus;
@@ -690,11 +1146,14 @@ window.setBotStatus =
 window.emergencyStop =
     emergencyStop;
 
-window.customerLogin =
-    customerLogin;
+window.toggleControl =
+    toggleControl;
 
-window.customerRegister =
-    customerRegister;
+window.saveSettings =
+    saveSettings;
+
+window.loadSettings =
+    loadSettings;
 
 window.subscribePremium =
     subscribePremium;
@@ -702,8 +1161,53 @@ window.subscribePremium =
 window.subscribeDemo =
     subscribeDemo;
 
-window.toggleControl =
-    toggleControl;
+window.showPremiumSubscription =
+    showPremiumSubscription;
 
-window.saveSettings =
-    saveSettings;
+window.showDemoSubscription =
+    showDemoSubscription;
+
+window.loadSubscriberCount =
+    loadSubscriberCount;
+
+window.loadCustomers =
+    loadCustomers;
+
+window.renderCustomers =
+    renderCustomers;
+
+window.refreshCustomers =
+    refreshCustomers;
+
+window.refreshDashboard =
+    refreshDashboard;
+
+window.customerLogin =
+    customerLogin;
+
+window.customerRegister =
+    customerRegister;
+
+window.customerLogout =
+    customerLogout;
+
+window.getCurrentCustomer =
+    getCurrentCustomer;
+
+window.isLoggedIn =
+    isLoggedIn;
+
+window.isAdmin =
+    isAdmin;
+
+window.requireAdmin =
+    requireAdmin;
+
+
+// ======================================================
+// DASHBOARD READY
+// ======================================================
+
+console.log(
+    "ZK Traders Bot Dashboard JavaScript loaded successfully."
+);
