@@ -382,7 +382,10 @@ function subscribeDemo() {
 ========================================================= */
 
 async function loadSubscriberCount() {
-
+    if (!isAdmin()) {
+        console.log("Subscriber count: Admin access required. Skipping API.");
+        return;
+    }
     try {
 
         const token =
@@ -644,7 +647,10 @@ function setCustomersLoading(message) {
 
 
 async function loadCustomers() {
-
+    if (!isAdmin()) {
+        console.log("Customers: Admin access required. Skipping customer API.");
+        return;
+    }
     try {
 
         const token =
