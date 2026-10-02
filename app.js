@@ -747,7 +747,18 @@ function applyRoleAccess() {
 
     const admin = isAdmin();
 
-    // Hide/show admin sections
+    // Admin-only elements
+    document.querySelectorAll(".admin-only").forEach(function (element) {
+
+        if (admin) {
+            element.classList.remove("admin-access-hidden");
+        } else {
+            element.classList.add("admin-access-hidden");
+        }
+
+    });
+
+    // Data attribute based admin elements
     document.querySelectorAll("[data-admin-only='true']").forEach(function (element) {
 
         if (admin) {
@@ -763,7 +774,6 @@ function applyRoleAccess() {
         admin ? "ADMIN" : "CUSTOMER"
     );
 }
-
 
 // ======================================================
 // ADMIN CHECK FOR BOT COMMANDS
