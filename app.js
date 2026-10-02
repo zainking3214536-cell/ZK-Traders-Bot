@@ -907,13 +907,9 @@ async function customerRegister() {
 // SUBSCRIPTION
 // ============================================================
 
-async function subscribePremium() {
-
-    if (!getToken()) {
-        alert("Please login first.");
-        return;
-    }
-
+function subscribePremium() {
+    window.location.href = "payment.html";
+}
     alert(
         "Premium subscription request submitted."
     );
