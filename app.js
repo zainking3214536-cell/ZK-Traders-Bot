@@ -7,6 +7,12 @@ const API_URL =
 
 async function sendCommand(account, command) {
 
+    // Frontend admin check
+    if (!isAdmin()) {
+        alert("Admin access required.");
+        return false;
+    }
+
     try {
 
         const token =
@@ -53,6 +59,33 @@ async function sendCommand(account, command) {
 
             return false;
         }
+
+        updateStatus(
+            account,
+            command
+        );
+
+        addActivity(
+            account,
+            command
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "API connection error:",
+            error
+        );
+
+        alert(
+            "API connection failed"
+        );
+
+        return false;
+    }
+}
 
         updateStatus(
             account,
