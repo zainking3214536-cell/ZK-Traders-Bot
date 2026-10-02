@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ZK Traders Bot - Payment</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #111a2e;
+            border-right: 1px solid #26334d;
+            padding: 22px 15px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo span {
+            display: block;
+            color: #8d9ab3;
+            font-size: 12px;
+            font-weight: normal;
+            margin-top: 5px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #b9c4d8;
+            padding: 12px 14px;
+            border-radius: 9px;
+            display: block;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #1d2a44;
+            color: #ffffff;
+        }
+
+        .main {
+            margin-left: 240px;
+            width: calc(100% - 240px);
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .topbar p {
+            color: #8d9ab3;
+            margin-top: 6px;
+        }
+
+        .back-btn {
+            background: #1d2a44;
+            border: 1px solid #31415f;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 0.8fr;
+            gap: 22px;
+            max-width: 1100px;
+        }
+
+        .card {
+            background: #111a2e;
+            border: 1px solid #26334d;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+
+        .card h2 {
+            margin-bottom: 7px;
+        }
+
+        .subtitle {
+            color: #8d9ab3;
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+
+        .plan-box {
+            background: #0c1527;
+            border: 1px solid #263b59;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 22px;
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .plan-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .active-badge {
+            background: rgba(73,230,174,0.12);
+            color: #49e6ae;
+            border: 1px solid rgba(73,230,174,0.3);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .price {
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .duration {
+            color: #8d9ab3;
+            margin-top: 4px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .field {
+            margin-bottom: 2px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #aebbd0;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            background: #0c1527;
+            color: white;
+            border: 1px solid #2a3b59;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #5477aa;
+        }
+
+        input[type="file"] {
+            padding: 9px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 18px;
+            border: none;
+            background: #16865e;
+            color: white;
+            padding: 14px;
+            border-radius: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.88;
+        }
+
+        .jazzcash {
+            background: #0c1527;
+            border: 1px solid #263b59;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        .jazzcash-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .number {
+            font-size: 25px;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .small {
+            color: #8d9ab3;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .steps {
+            margin-top: 20px;
+        }
+
+        .steps h3 {
+            font-size: 16px;
+            margin-bottom: 13px;
+        }
+
+        .step {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 13px;
+            color: #b9c4d8;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .step-number {
+            min-width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #1d2a44;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .security {
+            margin-top: 18px;
+            padding: 13px;
+            border-radius: 9px;
+            background: #17243a;
+            border: 1px solid #293c5b;
+            color: #9eabc0;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .success-box {
+            display: none;
+            margin-top: 18px;
+            padding: 15px;
+            background: rgba(73,230,174,0.08);
+            border: 1px solid rgba(73,230,174,0.3);
+            color: #49e6ae;
+            border-radius: 9px;
+        }
+
+        @media (max-width: 850px) {
+            .payment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #26334d;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 16px;
+            }
+
+            .nav {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .nav {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            ZK Traders Bot
+            <span>MT5 Trading Control Center</span>
+        </div>
+
+        <nav class="nav">
+            <a href="index.html">Dashboard</a>
+            <a href="accounts.html">Accounts</a>
+            <a href="index.html#subscription">Subscription</a>
+            <a href="index.html#customers">Customers</a>
+            <a href="index.html#subscribers">Subscribers</a>
+            <a href="payment.html" class="active">Payments</a>
+            <a href="index.html#analytics">Analytics</a>
+            <a href="index.html#settings">Settings</a>
+        </nav>
+
+    </aside>
+
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <div>
+                <h1>Complete Your Payment</h1>
+                <p>Submit your Premium subscription payment.</p>
+            </div>
+
+            <a href="index.html" class="back-btn">
+                ← Dashboard
+            </a>
+
+        </div>
+
+
+        <div class="payment-grid">
+
+
+            <!-- PAYMENT FORM -->
+
+            <section class="card">
+
+                <h2>Payment Information</h2>
+
+                <p class="subtitle">
+                    Enter your payment details after sending the amount.
+                </p>
+
+
+                <div class="plan-box">
+
+                    <div class="plan-header">
+
+                        <div class="plan-name">
+                            Premium Subscription
+                        </div>
+
+                        <span class="active-badge">
+                            30 DAYS
+                        </span>
+
+                    </div>
+
+                    <div class="price">
+                        Rs 5,000
+                    </div>
+
+                    <div class="duration">
+                        Full access for 30 days
+                    </div>
+
+                </div>
+
+
+                <form id="paymentForm">
+
+
+                    <div class="form-grid">
+
+
+                        <div class="field">
+
+                            <label>
+                                Customer ID
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customerId"
+                                placeholder="Enter Customer ID"
+                                required>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                Customer Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="customerEmail"
+                                placeholder="Enter Email"
+                                required>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                Selected Plan
+                            </label>
+
+                            <select id="plan">
+
+                                <option value="Premium">
+                                    Premium Subscription
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                Amount
+                            </label>
+
+                            <input
+                                type="text"
+                                value="Rs 5,000"
+                                readonly>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                Transaction ID
+                            </label>
+
+                            <input
+                                type="text"
+                                id="transactionId"
+                                placeholder="Enter JazzCash Transaction ID"
+                                required>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                Sender Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="senderName"
+                                placeholder="Enter Sender Name"
+                                required>
+
+                        </div>
+
+
+                        <div class="field full">
+
+                            <label>
+                                Payment Screenshot
+                            </label>
+
+                            <input
+                                type="file"
+                                id="paymentScreenshot"
+                                accept="image/*"
+                                required>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="submit-btn">
+
+                        Submit Payment
+
+                    </button>
+
+
+                </form>
+
+
+                <div
+                    id="successBox"
+                    class="success-box">
+
+                    Payment submitted successfully.
+                    Your payment is now pending Admin approval.
+
+                </div>
+
+            </section>
+
+
+
+            <!-- JAZZCASH -->
+
+            <aside class="card">
+
+                <div class="jazzcash">
+
+                    <div class="jazzcash-title">
+                        JazzCash Payment
+                    </div>
+
+                    <div class="small">
+                        Send exactly:
+                    </div>
+
+                    <div class="price">
+                        Rs 5,000
+                    </div>
+
+                    <div class="small">
+                        JazzCash Number
+                    </div>
+
+                    <div class="number">
+                        0300 1234567
+                    </div>
+
+                    <div class="small">
+                        Account Name:
+                        ZK Traders Bot
+                    </div>
+
+                </div>
+
+
+                <div class="steps">
+
+                    <h3>
+                        Payment Steps
+                    </h3>
+
+
+                    <div class="step">
+
+                        <div class="step-number">
+                            1
+                        </div>
+
+                        <div>
+                            Send <strong>Rs 5,000</strong>
+                            through JazzCash.
+                        </div>
+
+                    </div>
+
+
+                    <div class="step">
+
+                        <div class="step-number">
+                            2
+                        </div>
+
+                        <div>
+                            Save your JazzCash
+                            transaction ID.
+                        </div>
+
+                    </div>
+
+
+                    <div class="step">
+
+                        <div class="step-number">
+                            3
+                        </div>
+
+                        <div>
+                            Enter the transaction
+                            information in the form.
+                        </div>
+
+                    </div>
+
+
+                    <div class="step">
+
+                        <div class="step-number">
+                            4
+                        </div>
+
+                        <div>
+                            Upload your payment
+                            screenshot.
+                        </div>
+
+                    </div>
+
+
+                    <div class="step">
+
+                        <div class="step-number">
+                            5
+                        </div>
+
+                        <div>
+                            Submit the payment for
+                            Admin approval.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="security">
+
+                    <strong>Security Note</strong><br>
+
+                    Never share your JazzCash PIN,
+                    password or OTP with anyone.
+                    Only submit the transaction
+                    information required above.
+
+                </div>
+
+
+            </aside>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+document
+    .getElementById("paymentForm")
+    .addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            const customerId =
+                document.getElementById(
+                    "customerId"
+                ).value.trim();
+
+            const email =
+                document.getElementById(
+                    "customerEmail"
+                ).value.trim();
+
+            const transactionId =
+                document.getElementById(
+                    "transactionId"
+                ).value.trim();
+
+            const senderName =
+                document.getElementById(
+                    "senderName"
+                ).value.trim();
+
+            const screenshot =
+                document.getElementById(
+                    "paymentScreenshot"
+                ).files[0];
+
+
+            if (
+                !customerId ||
+                !email ||
+                !transactionId ||
+                !senderName ||
+                !screenshot
+            ) {
+
+                alert(
+                    "Please complete all payment fields."
+                );
+
+                return;
+
+            }
+
+
+            document
+                .getElementById("successBox")
+                .style.display = "block";
+
+
+            document
+                .getElementById("paymentForm")
+                .reset();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
