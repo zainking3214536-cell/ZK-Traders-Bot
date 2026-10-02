@@ -519,16 +519,17 @@ async function loadCustomers() {
 // RENDER CUSTOMERS
 // ============================================================
 
-function renderCustomers(
-    customers
-) {
+function renderCustomers(customers) {
 
     const tableBody =
         document.querySelector(
-            "#customers-table tbody"
+            "#customers table tbody"
         );
 
     if (!tableBody) {
+        console.error(
+            "Customers table body not found."
+        );
         return;
     }
 
@@ -550,54 +551,55 @@ function renderCustomers(
         return;
     }
 
-    customers.forEach(
-        function (customer) {
+    customers.forEach(function (customer) {
 
-            const row =
-                document.createElement("tr");
+        const row =
+            document.createElement("tr");
 
-            const customerId =
-                customer.customer_id ||
-                customer.id ||
-                "-";
+        const customerId =
+            customer.customer_id ||
+            customer.id ||
+            "-";
 
-            const email =
-                customer.email ||
-                "-";
+        const email =
+            customer.email ||
+            "-";
 
-            const role =
-                customer.role ||
-                "customer";
+        const role =
+            customer.role ||
+            "customer";
 
-            const created =
-                customer.created_at ||
-                customer.created ||
-                "-";
+        const created =
+            customer.created_at ||
+            customer.created ||
+            "-";
 
-            const status =
-                customer.status ||
-                "Active";
+        const status =
+            customer.status ||
+            "Active";
 
-            row.innerHTML = `
-                <td>${customerId}</td>
-                <td>${email}</td>
-                <td>${role}</td>
-                <td>${created}</td>
-                <td>${status}</td>
-                <td>
-                    <button
-                        type="button"
-                        onclick='viewCustomer(${JSON.stringify(customer)})'
-                    >
-                        View
-                    </button>
-                </td>
-            `;
+        row.innerHTML = `
+            <td>${customerId}</td>
+            <td>${email}</td>
+            <td>${role}</td>
+            <td>${created}</td>
+            <td>${status}</td>
+            <td>
+                <button
+                    type="button"
+                    onclick='viewCustomer(${JSON.stringify(customer)})'
+                >
+                    View
+                </button>
+            </td>
+        `;
 
-            tableBody.appendChild(
-                row
-            );
-        }
+        tableBody.appendChild(row);
+    });
+
+    console.log(
+        "Customers rendered:",
+        customers.length
     );
 }
 
