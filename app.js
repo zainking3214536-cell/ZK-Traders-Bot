@@ -730,6 +730,56 @@ async function loadCustomers() {
         );
     }
 }
+// ======================================================
+// ROLE ACCESS CONTROL
+// ======================================================
+
+function getUserRole() {
+    const role = localStorage.getItem("ZK_customer_role") || "";
+    return role.toLowerCase();
+}
+
+function isAdmin() {
+    return getUserRole() === "admin";
+}
+
+function applyRoleAccess() {
+
+    const admin = isAdmin();
+
+    // Hide/show admin sections
+    document.querySelectorAll("[data-admin-only='true']").forEach(function (element) {
+
+        if (admin) {
+            element.classList.remove("admin-access-hidden");
+        } else {
+            element.classList.add("admin-access-hidden");
+        }
+
+    });
+
+    console.log(
+        "Role Access:",
+        admin ? "ADMIN" : "CUSTOMER"
+    );
+}
+
+
+// ======================================================
+// ADMIN CHECK FOR BOT COMMANDS
+// ======================================================
+
+function requireAdmin() {
+
+    if (!isAdmin()) {
+
+        alert("Admin access required.");
+
+        return false;
+    }
+
+    return true;
+}
 /* =========================================================
    CUSTOMER LOGIN
 ========================================================= */
@@ -959,7 +1009,7 @@ async function customerRegister() {
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-
+    applyRoleAccess();
         loadSettings(
             "premium"
         );
