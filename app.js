@@ -1,70 +1,92 @@
-const API_URL =
-    "https://nameless-waterfall-e777.zainking3214536.workers.dev";
+const API_URL = "https://nameless-waterfall-e777.zainking3214536.workers.dev";
 
-/* =========================================================
-   COMMAND CONTROL
-========================================================= */
 
-async function sendCommand(account, command) {
+// ============================================================
+// AUTH / ROLE HELPERS
+// ============================================================
 
-    // Frontend admin check
+function getToken() {
+    return localStorage.getItem("ZK_customer_token") || "";
+}
+
+function getUserRole() {
+    return (
+        localStorage.getItem("ZK_customer_role") || ""
+    ).toLowerCase();
+}
+
+function isAdmin() {
+    return getUserRole() === "admin";
+}
+
+function requireAdmin() {
     if (!isAdmin()) {
         alert("Admin access required.");
         return false;
     }
 
+    return true;
+}
+
+
+// ============================================================
+// API COMMAND
+// ============================================================
+
+async function sendCommand(account, command) {
+
+    if (!isAdmin()) {
+        alert("Admin access required.");
+        return false;
+    }
+
+    const token = getToken();
+
+    if (!token) {
+        alert("Please login first.");
+        return false;
+    }
+
     try {
 
-        const token =
-            localStorage.getItem("ZK_customer_token");
+        const response = await fetch(
+            API_URL + "/command",
+            {
+                method: "POST",
 
-        if (!token) {
-            alert("Please login first.");
-            return false;
-        }
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
 
-        const response =
-            await fetch(
-                API_URL + "/command",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization":
-                            "Bearer " + token
-                    },
-
-                    body: JSON.stringify({
-                        account: account,
-                        command: command
-                    })
-                }
-            );
-
-        const data =
-            await response.json();
-
-        console.log(
-            "ZK Traders API:",
-            data
+                body: JSON.stringify({
+                    account: account,
+                    command: command
+                })
+            }
         );
 
-        if (!response.ok || !data.ok) {
+        let data = {};
+
+        try {
+            data = await response.json();
+        } catch (error) {
+            data = {};
+        }
+
+        console.log("ZK Traders API:", data);
+
+        if (!response.ok || data.ok === false) {
 
             alert(
                 "API Error: " +
-                (data.error || "Unknown error")
+                (data.error || "Request failed")
             );
 
             return false;
         }
 
-        updateStatus(
-            account,
-            command
-        );
-
+        updateStatus(account, command);
         addActivity(
             account,
             command
@@ -75,39 +97,12 @@ async function sendCommand(account, command) {
     } catch (error) {
 
         console.error(
-            "API connection error:",
+            "ZK Traders API Error:",
             error
         );
 
         alert(
-            "API connection failed"
-        );
-
-        return false;
-    }
-}
-
-        updateStatus(
-            account,
-            command
-        );
-
-        addActivity(
-            account,
-            command
-        );
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "API connection error:",
-            error
-        );
-
-        alert(
-            "API connection failed"
+            "API connection failed."
         );
 
         return false;
@@ -115,329 +110,274 @@ async function sendCommand(account, command) {
 }
 
 
-/* =========================================================
-   BOT STATUS
-========================================================= */
+// ============================================================
+// BOT STATUS
+// ============================================================
 
-function updateStatus(
+function updateStatus(account, status) {
+
+    let normalizedStatus =
+        String(status || "").toUpperCase();
+
+    if (
+        normalizedStatus === "START"
+    ) {
+        normalizedStatus = "RUNNING";
+    }
+
+    if (
+        normalizedStatus === "PAUSE"
+    ) {
+        normalizedStatus = "PAUSED";
+    }
+
+    if (
+        normalizedStatus === "STOP"
+    ) {
+        normalizedStatus = "STOPPED";
+    }
+
+    const statusId =
+        account === "premium"
+            ? "premium-status"
+            : "second-status";
+
+    const statusElement =
+        document.getElementById(statusId);
+
+    if (statusElement) {
+
+        statusElement.textContent =
+            normalizedStatus;
+
+        statusElement.className =
+            "status " +
+            normalizedStatus.toLowerCase();
+    }
+
+    console.log(
+        "Bot Status:",
+        account,
+        normalizedStatus
+    );
+}
+
+
+// ============================================================
+// SET BOT STATUS
+// ============================================================
+
+async function setBotStatus(
     account,
     status
 ) {
 
-    const statusElement =
-        document.getElementById(
-            account + "-status"
-        );
-
-    if (!statusElement) {
+    if (!requireAdmin()) {
         return;
     }
 
-    statusElement.textContent =
-        status;
+    let command =
+        String(status || "").toUpperCase();
 
-    if (status === "RUNNING") {
-
-        statusElement.style.color =
-            "#4ade80";
-
-    } else if (
-        status === "PAUSED" ||
-        status === "PAUSE"
-    ) {
-
-        statusElement.style.color =
-            "#fbbf24";
-
-    } else {
-
-        statusElement.style.color =
-            "#f87171";
+    if (command === "RUNNING") {
+        command = "START";
     }
-}
 
-
-/* =========================================================
-   SET BOT STATUS
-========================================================= */
-
-function setBotStatus(
-    account,
-    status
-) {
-
-    let command = status;
-
-    if (status === "PAUSED") {
+    if (command === "PAUSED") {
         command = "PAUSE";
     }
 
-    if (status === "STOPPED") {
+    if (command === "STOPPED") {
         command = "STOP";
     }
 
-    if (status === "RUNNING") {
-        command = "RUNNING";
+    if (
+        command !== "START" &&
+        command !== "PAUSE" &&
+        command !== "STOP"
+    ) {
+        alert("Invalid bot command.");
+        return;
     }
 
-    sendCommand(
+    await sendCommand(
         account,
         command
     );
 }
 
 
-/* =========================================================
-   EMERGENCY STOP
-========================================================= */
+// ============================================================
+// EMERGENCY STOP
+// ============================================================
 
-function emergencyStop(
-    account
-) {
+async function emergencyStop(account) {
 
-    if (
-        !confirm(
-            "Emergency Stop " +
-            account +
-            " bot?"
-        )
-    ) {
+    if (!requireAdmin()) {
         return;
     }
 
-    sendCommand(
+    const confirmed =
+        confirm(
+            "Are you sure you want to EMERGENCY STOP this account?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    await sendCommand(
         account,
         "EMERGENCY_STOP"
     );
 }
 
 
-/* =========================================================
-   TOGGLE ACCOUNT CONTROLS
-========================================================= */
-
-function toggleControl(
-    account,
-    control,
-    enabled
-) {
-
-    console.log(
-        account +
-        " | " +
-        control +
-        " | " +
-        (
-            enabled
-                ? "ON"
-                : "OFF"
-        )
-    );
-
-    localStorage.setItem(
-        "ZK_Control_" +
-        account +
-        "_" +
-        control,
-        enabled
-            ? "ON"
-            : "OFF"
-    );
-}
-
-
-/* =========================================================
-   SAVE SETTINGS
-========================================================= */
-
-function saveSettings(
-    account
-) {
-
-    const settings = {
-
-        risk:
-            document.getElementById(
-                account + "-risk"
-            )?.value || 1,
-
-        dailyTarget:
-            document.getElementById(
-                account + "-target"
-            )?.value || 1,
-
-        dailyLoss:
-            document.getElementById(
-                account + "-loss"
-            )?.value || 1
-    };
-
-    localStorage.setItem(
-        "ZK_Traders_" + account,
-        JSON.stringify(settings)
-    );
-
-    alert(
-        account +
-        " settings saved.\n\n" +
-        "Risk: " +
-        settings.risk +
-        "%\n" +
-        "Daily Target: " +
-        settings.dailyTarget +
-        "%\n" +
-        "Daily Loss: " +
-        settings.dailyLoss +
-        "%"
-    );
-}
-
-
-/* =========================================================
-   ACTIVITY
-========================================================= */
+// ============================================================
+// ACTIVITY LOG
+// ============================================================
 
 function addActivity(
     account,
     command
 ) {
 
-    console.log(
-        "Activity:",
-        account,
-        command,
-        new Date().toLocaleString()
-    );
+    const activityList =
+        document.getElementById(
+            "activity-list"
+        );
+
+    if (!activityList) {
+        return;
+    }
+
+    const item =
+        document.createElement("div");
+
+    item.className =
+        "activity-item";
+
+    item.innerHTML = `
+        <strong>${account}</strong>
+        <span>${command}</span>
+    `;
+
+    activityList.prepend(item);
 }
 
 
-/* =========================================================
-   LOAD SETTINGS
-========================================================= */
+// ============================================================
+// CONTROL TOGGLE
+// ============================================================
 
-function loadSettings(
-    account
+function toggleControl(
+    element
 ) {
 
-    const saved =
-        localStorage.getItem(
-            "ZK_Traders_" + account
-        );
-
-    if (!saved) {
+    if (!element) {
         return;
     }
 
-    try {
-
-        const settings =
-            JSON.parse(saved);
-
-        const risk =
-            document.getElementById(
-                account + "-risk"
-            );
-
-        const target =
-            document.getElementById(
-                account + "-target"
-            );
-
-        const loss =
-            document.getElementById(
-                account + "-loss"
-            );
-
-        if (
-            risk &&
-            settings.risk !== undefined
-        ) {
-
-            risk.value =
-                settings.risk;
-        }
-
-        if (
-            target &&
-            settings.dailyTarget !== undefined
-        ) {
-
-            target.value =
-                settings.dailyTarget;
-        }
-
-        if (
-            loss &&
-            settings.dailyLoss !== undefined
-        ) {
-
-            loss.value =
-                settings.dailyLoss;
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Settings load error:",
-            error
-        );
+    if (!isAdmin()) {
+        alert("Admin access required.");
+        return;
     }
-}
 
-
-/* =========================================================
-   SUBSCRIPTIONS
-========================================================= */
-
-function subscribePremium() {
-
-    alert(
-        "Premium Subscription\n\n" +
-        "Price: Rs 5,000\n" +
-        "Duration: 30 Days\n" +
-        "Payment Method: JazzCash\n\n" +
-        "Payment page will open next."
+    element.classList.toggle(
+        "active"
     );
 }
 
 
-function subscribeDemo() {
+// ============================================================
+// ACCOUNT SETTINGS PLACEHOLDER
+// ============================================================
 
-    alert(
-        "Demo Account Test\n\n" +
-        "Demo subscription / testing page will open next."
+async function loadSettings(account) {
+
+    console.log(
+        "Loading settings:",
+        account
+    );
+
+    return true;
+}
+// ============================================================
+// ROLE ACCESS
+// ============================================================
+
+function applyRoleAccess() {
+
+    const admin = isAdmin();
+
+    document
+        .querySelectorAll(".admin-only")
+        .forEach(function (element) {
+
+            if (admin) {
+                element.classList.remove(
+                    "admin-access-hidden"
+                );
+            } else {
+                element.classList.add(
+                    "admin-access-hidden"
+                );
+            }
+        });
+
+
+    document
+        .querySelectorAll(
+            "[data-admin-only='true']"
+        )
+        .forEach(function (element) {
+
+            if (admin) {
+                element.classList.remove(
+                    "admin-access-hidden"
+                );
+            } else {
+                element.classList.add(
+                    "admin-access-hidden"
+                );
+            }
+        });
+
+
+    console.log(
+        "Role Access:",
+        admin ? "ADMIN" : "CUSTOMER"
     );
 }
 
 
-/* =========================================================
-   SUBSCRIBER COUNT
-========================================================= */
+// ============================================================
+// SUBSCRIBER COUNT
+// ============================================================
 
 async function loadSubscriberCount() {
+
     if (!isAdmin()) {
-        console.log("Subscriber count: Admin access required. Skipping API.");
+
+        console.log(
+            "Subscriber count: Admin access required. Skipping API."
+        );
+
         return;
     }
+
+    const token = getToken();
+
+    if (!token) {
+        return;
+    }
+
     try {
-
-        const token =
-            localStorage.getItem(
-                "ZK_customer_token"
-            );
-
-        if (!token) {
-
-            console.log(
-                "Admin login required for subscriber count."
-            );
-
-            return;
-        }
 
         const response =
             await fetch(
-                API_URL + "/subscribers/count",
+                API_URL +
+                "/subscribers/count",
                 {
                     method: "GET",
 
@@ -458,16 +398,20 @@ async function loadSubscriberCount() {
 
         if (
             !response.ok ||
-            !data.ok
+            data.ok === false
         ) {
-
-            console.error(
+            console.warn(
                 "Subscriber count error:",
                 data.error
             );
 
             return;
         }
+
+        const count =
+            data.count ??
+            data.subscribers ??
+            0;
 
         const elements =
             document.querySelectorAll(
@@ -476,233 +420,43 @@ async function loadSubscriberCount() {
 
         elements.forEach(
             function (element) {
-
                 element.textContent =
-                    data.total;
+                    count;
             }
         );
 
     } catch (error) {
 
         console.error(
-            "Subscriber count connection error:",
+            "Subscriber count error:",
             error
         );
     }
 }
 
 
-/* =========================================================
-   CUSTOMERS
-========================================================= */
-
-function renderCustomers(customers) {
-
-    const list =
-        Array.isArray(customers)
-            ? customers
-            : [];
-
-    const body =
-        document.getElementById(
-            "customers-table-body"
-        ) ||
-        document.getElementById(
-            "customersTableBody"
-        ) ||
-        document.getElementById(
-            "customers-list"
-        ) ||
-        document.querySelector(
-            "#customers-table tbody"
-        ) ||
-        document.querySelector(
-            "#customersTable tbody"
-        ) ||
-        document.querySelector(
-            ".customers-table tbody"
-        );
-
-    if (!body) {
-
-        console.warn(
-            "Customers data received, but no customer table body was found in HTML."
-        );
-
-        return;
-    }
-
-    body.innerHTML = "";
-
-    if (!list.length) {
-
-        const row =
-            document.createElement("tr");
-
-        const cell =
-            document.createElement("td");
-
-        cell.colSpan = 8;
-        cell.textContent =
-            "No customers found.";
-
-        cell.style.textAlign =
-            "center";
-
-        cell.style.padding =
-            "20px";
-
-        row.appendChild(cell);
-        body.appendChild(row);
-
-        return;
-    }
-
-    list.forEach(
-        function (customer) {
-
-            const row =
-                document.createElement("tr");
-
-            const values = [
-
-                customer.customer_id ??
-                    customer.id ??
-                    "-",
-
-                customer.email ??
-                    "-",
-
-                customer.role ??
-                    "customer",
-
-                customer.status ??
-                    customer.subscription_status ??
-                    "Active",
-
-                customer.plan ??
-                    customer.subscription ??
-                    "-",
-
-                customer.expires_at ??
-                    customer.expiry ??
-                    "-",
-
-                customer.created_at ??
-                    customer.created ??
-                    "-",
-
-                customer.account ??
-                    customer.mt5_account ??
-                    "-"
-            ];
-
-            values.forEach(
-                function (value) {
-
-                    const cell =
-                        document.createElement("td");
-
-                    cell.textContent =
-                        value === null ||
-                        value === undefined
-                            ? "-"
-                            : String(value);
-
-                    cell.style.padding =
-                        "10px";
-
-                    cell.style.verticalAlign =
-                        "middle";
-
-                    row.appendChild(cell);
-                }
-            );
-
-            body.appendChild(row);
-        }
-    );
-}
-
-
-/* =========================================================
-   CUSTOMER LOADING
-========================================================= */
-
-function setCustomersLoading(message) {
-
-    const body =
-        document.getElementById(
-            "customers-table-body"
-        ) ||
-        document.getElementById(
-            "customersTableBody"
-        ) ||
-        document.getElementById(
-            "customers-list"
-        ) ||
-        document.querySelector(
-            "#customers-table tbody"
-        ) ||
-        document.querySelector(
-            "#customersTable tbody"
-        ) ||
-        document.querySelector(
-            ".customers-table tbody"
-        );
-
-    if (!body) {
-        return;
-    }
-
-    body.innerHTML = "";
-
-    const row =
-        document.createElement("tr");
-
-    const cell =
-        document.createElement("td");
-
-    cell.colSpan = 8;
-
-    cell.textContent =
-        message;
-
-    cell.style.textAlign =
-        "center";
-
-    cell.style.padding =
-        "20px";
-
-    row.appendChild(cell);
-    body.appendChild(row);
-}
-
+// ============================================================
+// CUSTOMERS
+// ============================================================
 
 async function loadCustomers() {
+
     if (!isAdmin()) {
-        console.log("Customers: Admin access required. Skipping customer API.");
+
+        console.log(
+            "Customers: Admin access required. Skipping customer API."
+        );
+
         return;
     }
+
+    const token = getToken();
+
+    if (!token) {
+        return;
+    }
+
     try {
-
-        const token =
-            localStorage.getItem(
-                "ZK_customer_token"
-            );
-
-        if (!token) {
-
-            console.log(
-                "Admin/customer login required for customers."
-            );
-
-            return;
-        }
-
-        setCustomersLoading(
-            "Loading customers..."
-        );
 
         const response =
             await fetch(
@@ -727,31 +481,25 @@ async function loadCustomers() {
 
         if (
             !response.ok ||
-            !data.ok
+            data.ok === false
         ) {
 
-            console.error(
+            console.warn(
                 "Customers API error:",
                 data.error
-            );
-
-            setCustomersLoading(
-                data.error ||
-                "Unable to load customers."
             );
 
             return;
         }
 
         const customers =
-            Array.isArray(data.customers)
-                ? data.customers
-                : [];
-
-        localStorage.setItem(
-            "ZK_customers",
-            JSON.stringify(customers)
-        );
+            Array.isArray(data)
+                ? data
+                : (
+                    data.customers ||
+                    data.data ||
+                    []
+                );
 
         renderCustomers(
             customers
@@ -760,78 +508,160 @@ async function loadCustomers() {
     } catch (error) {
 
         console.error(
-            "Customers connection error:",
+            "Customers error:",
             error
-        );
-
-        setCustomersLoading(
-            "Customers load failed."
         );
     }
 }
-// ======================================================
-// ROLE ACCESS CONTROL
-// ======================================================
 
-function getUserRole() {
-    const role = localStorage.getItem("ZK_customer_role") || "";
-    return role.toLowerCase();
-}
 
-function isAdmin() {
-    return getUserRole() === "admin";
-}
+// ============================================================
+// RENDER CUSTOMERS
+// ============================================================
 
-function applyRoleAccess() {
+function renderCustomers(
+    customers
+) {
 
-    const admin = isAdmin();
+    const tableBody =
+        document.querySelector(
+            "#customers-table tbody"
+        );
 
-    // Admin-only elements
-    document.querySelectorAll(".admin-only").forEach(function (element) {
+    if (!tableBody) {
+        return;
+    }
 
-        if (admin) {
-            element.classList.remove("admin-access-hidden");
-        } else {
-            element.classList.add("admin-access-hidden");
+    tableBody.innerHTML = "";
+
+    if (
+        !customers ||
+        customers.length === 0
+    ) {
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    No customers found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    customers.forEach(
+        function (customer) {
+
+            const row =
+                document.createElement("tr");
+
+            const customerId =
+                customer.customer_id ||
+                customer.id ||
+                "-";
+
+            const email =
+                customer.email ||
+                "-";
+
+            const role =
+                customer.role ||
+                "customer";
+
+            const created =
+                customer.created_at ||
+                customer.created ||
+                "-";
+
+            const status =
+                customer.status ||
+                "Active";
+
+            row.innerHTML = `
+                <td>${customerId}</td>
+                <td>${email}</td>
+                <td>${role}</td>
+                <td>${created}</td>
+                <td>${status}</td>
+                <td>
+                    <button
+                        type="button"
+                        onclick='viewCustomer(${JSON.stringify(customer)})'
+                    >
+                        View
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(
+                row
+            );
         }
-
-    });
-
-    // Data attribute based admin elements
-    document.querySelectorAll("[data-admin-only='true']").forEach(function (element) {
-
-        if (admin) {
-            element.classList.remove("admin-access-hidden");
-        } else {
-            element.classList.add("admin-access-hidden");
-        }
-
-    });
-
-    console.log(
-        "Role Access:",
-        admin ? "ADMIN" : "CUSTOMER"
     );
 }
 
-// ======================================================
-// ADMIN CHECK FOR BOT COMMANDS
-// ======================================================
 
-function requireAdmin() {
+// ============================================================
+// VIEW CUSTOMER
+// ============================================================
 
-    if (!isAdmin()) {
+function viewCustomer(
+    customer
+) {
 
-        alert("Admin access required.");
-
-        return false;
+    if (!requireAdmin()) {
+        return;
     }
 
-    return true;
+    if (!customer) {
+        return;
+    }
+
+    console.log(
+        "Customer Details:",
+        customer
+    );
+
+    const customerId =
+        document.getElementById(
+            "detail-customer-id"
+        );
+
+    const customerEmail =
+        document.getElementById(
+            "detail-customer-email"
+        );
+
+    const customerRole =
+        document.getElementById(
+            "detail-customer-role"
+        );
+
+    if (customerId) {
+        customerId.textContent =
+            customer.customer_id ||
+            customer.id ||
+            "-";
+    }
+
+    if (customerEmail) {
+        customerEmail.textContent =
+            customer.email ||
+            "-";
+    }
+
+    if (customerRole) {
+        customerRole.textContent =
+            customer.role ||
+            "customer";
+    }
 }
-/* =========================================================
-   CUSTOMER LOGIN
-========================================================= */
+
+
+// ============================================================
+// LOGIN
+// ============================================================
 
 async function customerLogin() {
 
@@ -845,7 +675,10 @@ async function customerLogin() {
             "customer-password"
         );
 
-    if (!emailElement || !passwordElement) {
+    if (
+        !emailElement ||
+        !passwordElement
+    ) {
 
         alert(
             "Login fields not found."
@@ -863,7 +696,7 @@ async function customerLogin() {
     if (!email || !password) {
 
         alert(
-            "Email aur password enter karein."
+            "Please enter email and password."
         );
 
         return;
@@ -873,7 +706,8 @@ async function customerLogin() {
 
         const response =
             await fetch(
-                API_URL + "/auth/login",
+                API_URL +
+                "/auth/login",
                 {
                     method: "POST",
 
@@ -899,12 +733,24 @@ async function customerLogin() {
 
         if (
             !response.ok ||
-            !data.ok
+            data.ok === false
         ) {
 
             alert(
-                data.error ||
-                "Login failed."
+                "Login failed: " +
+                (
+                    data.error ||
+                    "Invalid email or password"
+                )
+            );
+
+            return;
+        }
+
+        if (!data.token) {
+
+            alert(
+                "Login successful but no token was returned."
             );
 
             return;
@@ -917,42 +763,43 @@ async function customerLogin() {
 
         localStorage.setItem(
             "ZK_customer_id",
-            data.customer_id
+            data.customer_id ||
+            data.id ||
+            ""
         );
 
         localStorage.setItem(
             "ZK_customer_role",
-            data.role
+            data.role ||
+            "customer"
         );
+
+        applyRoleAccess();
 
         alert(
-            "Login successful!\n\n" +
-            "Customer ID: " +
-            data.customer_id +
-            "\nRole: " +
-            data.role
+            "Login successful."
         );
 
-        loadSubscriberCount();
-        loadCustomers();
+        await loadSubscriberCount();
+        await loadCustomers();
 
     } catch (error) {
 
         console.error(
-            "Login error:",
+            "ZK Login Error:",
             error
         );
 
         alert(
-            "Login server se connect nahi ho saka."
+            "Login connection failed."
         );
     }
 }
 
 
-/* =========================================================
-   CUSTOMER REGISTER
-========================================================= */
+// ============================================================
+// REGISTER
+// ============================================================
 
 async function customerRegister() {
 
@@ -966,7 +813,10 @@ async function customerRegister() {
             "customer-password"
         );
 
-    if (!emailElement || !passwordElement) {
+    if (
+        !emailElement ||
+        !passwordElement
+    ) {
 
         alert(
             "Registration fields not found."
@@ -984,7 +834,7 @@ async function customerRegister() {
     if (!email || !password) {
 
         alert(
-            "Email aur password enter karein."
+            "Please enter email and password."
         );
 
         return;
@@ -994,7 +844,8 @@ async function customerRegister() {
 
         const response =
             await fetch(
-                API_URL + "/auth/register",
+                API_URL +
+                "/auth/register",
                 {
                     method: "POST",
 
@@ -1020,55 +871,80 @@ async function customerRegister() {
 
         if (
             !response.ok ||
-            !data.ok
+            data.ok === false
         ) {
 
             alert(
-                data.error ||
-                "Registration failed."
+                "Registration failed: " +
+                (
+                    data.error ||
+                    "Unable to create account"
+                )
             );
 
             return;
         }
 
         alert(
-            "Account created!\n\n" +
-            "Customer ID: " +
-            data.customer_id
+            "Account created successfully. Please login."
         );
 
     } catch (error) {
 
         console.error(
-            "Registration error:",
+            "ZK Register Error:",
             error
         );
 
         alert(
-            "Registration server se connect nahi ho saka."
+            "Registration connection failed."
         );
     }
 }
+// ============================================================
+// SUBSCRIPTION
+// ============================================================
+
+async function subscribePremium() {
+
+    if (!getToken()) {
+        alert("Please login first.");
+        return;
+    }
+
+    alert(
+        "Premium subscription request submitted."
+    );
+}
 
 
-/* =========================================================
-   PAGE INITIALIZATION
-========================================================= */
+async function subscribeDemo() {
+
+    if (!getToken()) {
+        alert("Please login first.");
+        return;
+    }
+
+    alert(
+        "Demo account subscription request submitted."
+    );
+}
+
+
+// ============================================================
+// DOM READY
+// ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-    applyRoleAccess();
-        loadSettings(
-            "premium"
-        );
 
-        loadSettings(
-            "second"
-        );
+        applyRoleAccess();
+
+        loadSettings("premium");
+        loadSettings("second");
 
         loadSubscriberCount();
-
         loadCustomers();
 
         console.log(
@@ -1078,9 +954,9 @@ document.addEventListener(
 );
 
 
-/* =========================================================
-   GLOBAL FUNCTIONS
-========================================================= */
+// ============================================================
+// GLOBAL FUNCTIONS
+// ============================================================
 
 window.setBotStatus =
     setBotStatus;
@@ -1106,11 +982,17 @@ window.toggleControl =
 window.renderCustomers =
     renderCustomers;
 
+window.viewCustomer =
+    viewCustomer;
+
 window.loadCustomers =
     loadCustomers;
 
-window.saveSettings =
-    saveSettings;
+window.loadSubscriberCount =
+    loadSubscriberCount;
+
+window.loadSettings =
+    loadSettings;
 
 window.sendCommand =
     sendCommand;
@@ -1118,5 +1000,11 @@ window.sendCommand =
 window.updateStatus =
     updateStatus;
 
-window.loadSubscriberCount =
-    loadSubscriberCount;
+window.applyRoleAccess =
+    applyRoleAccess;
+
+window.requireAdmin =
+    requireAdmin;
+
+window.isAdmin =
+    isAdmin;
