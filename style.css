@@ -835,3 +835,285 @@ td {
         padding: 12px !important;
     }
 }
+
+/* =====================================
+   ZK TRADERS BOT - NEW PREMIUM THEME
+   BLACK + NEON GREEN + GOLD
+===================================== */
+
+:root {
+    --zk-bg: #070a08;
+    --zk-panel: #101713;
+    --zk-panel-light: #17221b;
+    --zk-border: #263b2c;
+    --zk-green: #39ff14;
+    --zk-green-dark: #15803d;
+    --zk-gold: #e5bd59;
+    --zk-text: #f5f7f5;
+    --zk-muted: #9aaba0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at top right, #14291b 0%, transparent 40%),
+        var(--zk-bg) !important;
+    color: var(--zk-text) !important;
+    font-family: Arial, sans-serif;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    background: #090e0b !important;
+    border-right: 1px solid var(--zk-border) !important;
+}
+
+.logo {
+    color: var(--zk-green) !important;
+    text-shadow: 0 0 15px #39ff1455;
+    letter-spacing: 1px;
+}
+
+.nav-item {
+    color: var(--zk-muted) !important;
+    border: 1px solid transparent;
+    transition: all .25s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--zk-green) !important;
+    background: #14231a !important;
+    border-color: #285b34 !important;
+    box-shadow: inset 3px 0 var(--zk-green);
+}
+
+/* MAIN AREA */
+
+.main {
+    background: transparent !important;
+}
+
+.header h1 {
+    color: var(--zk-text) !important;
+}
+
+.header p {
+    color: var(--zk-muted) !important;
+}
+
+.status-online,
+.connected {
+    color: var(--zk-green) !important;
+    font-weight: bold;
+}
+
+/* CARDS */
+
+.card {
+    background: linear-gradient(145deg, #121b15, #0b110d) !important;
+    border: 1px solid var(--zk-border) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 25px #00000035;
+    transition: border-color .25s, transform .25s;
+}
+
+.card:hover {
+    border-color: #397c45 !important;
+    transform: translateY(-2px);
+}
+
+.card h3 {
+    color: var(--zk-text) !important;
+}
+
+.big-number,
+.green {
+    color: var(--zk-green) !important;
+}
+
+.yellow,
+.orange {
+    color: var(--zk-gold) !important;
+}
+
+.red {
+    color: #ff6262 !important;
+}
+
+/* ACCOUNT PANELS */
+
+.account-grid .card {
+    background: linear-gradient(145deg, #142019, #0b110d) !important;
+}
+
+.account-header {
+    border-bottom: 1px solid var(--zk-border);
+    padding-bottom: 14px;
+    margin-bottom: 12px;
+}
+
+/* CONTROL ROWS */
+
+.control {
+    border-bottom-color: var(--zk-border) !important;
+}
+
+.control span {
+    color: var(--zk-text);
+}
+
+/* BUTTONS */
+
+button {
+    border-radius: 9px !important;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.start {
+    background: linear-gradient(135deg, #39ff14, #159447) !important;
+    color: #041006 !important;
+}
+
+.pause {
+    background: #d6a52e !important;
+    color: #151006 !important;
+}
+
+.stop {
+    background: #d93636 !important;
+}
+
+.blue {
+    background: linear-gradient(135deg, #cba448, #96701d) !important;
+    color: #100e07 !important;
+}
+
+button:hover {
+    filter: brightness(1.12);
+    opacity: 1 !important;
+}
+
+/* INPUTS */
+
+input,
+select,
+textarea {
+    background: #080e0a !important;
+    color: white !important;
+    border: 1px solid #35543d !important;
+    border-radius: 8px !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none !important;
+    border-color: var(--zk-green) !important;
+    box-shadow: 0 0 0 2px #39ff1420;
+}
+
+/* TABLES */
+
+table {
+    background: transparent;
+}
+
+th {
+    background: #17241a;
+    color: var(--zk-green);
+}
+
+td {
+    color: var(--zk-text);
+}
+
+th,
+td {
+    border-bottom-color: var(--zk-border) !important;
+}
+
+/* SUBSCRIPTION */
+
+.subscription,
+.payment,
+.pricing {
+    color: var(--zk-text);
+}
+
+.subscription-price {
+    color: var(--zk-gold) !important;
+}
+
+.subscription-box,
+.subscription-detail {
+    background: #111b14;
+    border: 1px solid var(--zk-border);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.subscribe-button {
+    background: linear-gradient(135deg, #39ff14, #16803b) !important;
+    color: #041006 !important;
+    font-weight: bold;
+}
+
+/* CUSTOMER ACCESS */
+
+.customer-access {
+    background: #101a13 !important;
+    border-color: #345b3b !important;
+}
+
+.customer-input {
+    width: 100%;
+}
+
+/* CHART */
+
+.chart {
+    border-radius: 12px;
+}
+
+/* FOOTER */
+
+.footer {
+    color: var(--zk-muted);
+    border-top: 1px solid var(--zk-border);
+}
+
+/* MOBILE THEME */
+
+@media (max-width: 900px) {
+    .sidebar {
+        background: #090e0b !important;
+        border-bottom-color: var(--zk-border) !important;
+    }
+
+    .nav-item {
+        border-radius: 8px !important;
+    }
+
+    .main {
+        background: transparent !important;
+    }
+
+    .card {
+        border-radius: 13px !important;
+    }
+}
+
+/* ACCESSIBILITY */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--zk-green);
+    outline-offset: 3px;
+}
