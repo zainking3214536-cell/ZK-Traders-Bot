@@ -144,6 +144,11 @@ async function setBotStatus(account, status) {
 
     const requested = String(status || "").toUpperCase();
 
+    if (requested === "EMERGENCY_STOP") {
+        await emergencyStop(account);
+        return;
+    }
+
     const commandMap = {
         "RUNNING": "START",
         "START": "START",
@@ -204,21 +209,19 @@ function addActivity(account, command) {
 // CONTROL TOGGLE
 // ============================================================
 
-function toggleControl(account, setting, element) {
+function toggleControl(account, setting, enabled) {
     if (!requireAdmin()) {
-        if (element) element.checked = !element.checked;
         return;
     }
-
-    if (!element) return;
 
     console.log("Control changed:", {
         account: account,
         setting: setting,
-        enabled: element.checked
+        enabled: Boolean(enabled)
     });
 
-    // Frontend state only. Worker integration is not changed here.
+    // Frontend state only.
+    // Database/Worker integration baad mein hogi.
 }
 
 // ============================================================
