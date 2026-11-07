@@ -1,6 +1,5 @@
 const API_URL = "https://nameless-waterfall-e777.zainking3214536.workers.dev";
 
-
 // ============================================================
 // AUTH / ROLE HELPERS
 // ============================================================
@@ -24,50 +23,66 @@ function requireAdmin() {
         alert("Admin access required.");
         return false;
     }
-
+    if (!getToken()) {
+        alert("Please login first.");
+        return false;
+    }
     return true;
 }
 
+// ============================================================
+// SAFE TEXT HELPER
+// ============================================================
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value ?? "-";
+    }
+}
 
 // ============================================================
 // API COMMAND
 // ============================================================
 
 async function sendCommand(account, command) {
+    if (!requireAdmin()) return false;
 
-    if (!isAdmin()) {
-        alert("Admin access required.");
+    const allowedAccounts = ["premium", "second"];
+    const allowedCommands = [
+        "START",
+        "PAUSE",
+        "STOP",
+        "EMERGENCY_STOP",
+        "RUNNING"
+    ];
+
+    if (!allowedAccounts.includes(account)) {
+        alert("Invalid account.");
+        return false;
+    }
+
+    if (!allowedCommands.includes(command)) {
+        alert("Invalid bot command.");
         return false;
     }
 
     const token = getToken();
 
-    if (!token) {
-        alert("Please login first.");
-        return false;
-    }
-
     try {
-
-        const response = await fetch(
-            API_URL + "/command",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-
-                body: JSON.stringify({
-                    account: account,
-                    command: command
-                })
-            }
-        );
+        const response = await fetch(API_URL + "/command", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                account: account,
+                command: command
+            })
+        });
 
         let data = {};
-
         try {
             data = await response.json();
         } catch (error) {
@@ -77,932 +92,518 @@ async function sendCommand(account, command) {
         console.log("ZK Traders API:", data);
 
         if (!response.ok || data.ok === false) {
-
-            alert(
-                "API Error: " +
-                (data.error || "Request failed")
-            );
-
+            alert("API Error: " + (data.error || "Request failed"));
             return false;
         }
 
         updateStatus(account, command);
-        addActivity(
-            account,
-            command
-        );
-
+        addActivity(account, command);
         return true;
 
     } catch (error) {
-
-        console.error(
-            "ZK Traders API Error:",
-            error
-        );
-
-        alert(
-            "API connection failed."
-        );
-
+        console.error("ZK Traders API Error:", error);
+        alert("API connection failed.");
         return false;
     }
 }
-
 
 // ============================================================
 // BOT STATUS
 // ============================================================
 
 function updateStatus(account, status) {
+    let normalizedStatus = String(status || "").toUpperCase();
 
-    let normalizedStatus =
-        String(status || "").toUpperCase();
-
-    if (
-        normalizedStatus === "START"
-    ) {
-        normalizedStatus = "RUNNING";
-    }
-
-    if (
-        normalizedStatus === "PAUSE"
-    ) {
-        normalizedStatus = "PAUSED";
-    }
-
-    if (
-        normalizedStatus === "STOP"
-    ) {
-        normalizedStatus = "STOPPED";
+    if (normalizedStatus === "START") normalizedStatus = "RUNNING";
+    if (normalizedStatus === "PAUSE") normalizedStatus = "PAUSED";
+    if (normalizedStatus === "STOP") normalizedStatus = "STOPPED";
+    if (normalizedStatus === "EMERGENCY_STOP") {
+        normalizedStatus = "EMERGENCY STOP";
     }
 
     const statusId =
-        account === "premium"
-            ? "premium-status"
-            : "second-status";
+        account === "premium" ? "premium-status" : "second-status";
 
-    const statusElement =
-        document.getElementById(statusId);
+    const statusElement = document.getElementById(statusId);
 
     if (statusElement) {
-
-        statusElement.textContent =
-            normalizedStatus;
-
+        statusElement.textContent = normalizedStatus;
         statusElement.className =
-            "status " +
-            normalizedStatus.toLowerCase();
+            "status " + normalizedStatus.toLowerCase().replace(/\s+/g, "-");
     }
 
-    console.log(
-        "Bot Status:",
-        account,
-        normalizedStatus
-    );
+    console.log("Bot Status:", account, normalizedStatus);
 }
-
 
 // ============================================================
 // SET BOT STATUS
 // ============================================================
 
-async function setBotStatus(
-    account,
-    status
-) {
+async function setBotStatus(account, status) {
+    if (!requireAdmin()) return;
 
-    if (!requireAdmin()) {
-        return;
-    }
+    const requested = String(status || "").toUpperCase();
 
-    let command =
-        String(status || "").toUpperCase();
+    const commandMap = {
+        "RUNNING": "START",
+        "START": "START",
+        "PAUSED": "PAUSE",
+        "PAUSE": "PAUSE",
+        "STOPPED": "STOP",
+        "STOP": "STOP"
+    };
 
-    if (command === "RUNNING") {
-        command = "START";
-    }
+    const command = commandMap[requested];
 
-    if (command === "PAUSED") {
-        command = "PAUSE";
-    }
-
-    if (command === "STOPPED") {
-        command = "STOP";
-    }
-
-    if (
-        command !== "START" &&
-        command !== "PAUSE" &&
-        command !== "STOP"
-    ) {
+    if (!command) {
         alert("Invalid bot command.");
         return;
     }
 
-    await sendCommand(
-        account,
-        command
-    );
+    await sendCommand(account, command);
 }
-
 
 // ============================================================
 // EMERGENCY STOP
 // ============================================================
 
 async function emergencyStop(account) {
+    if (!requireAdmin()) return;
 
-    if (!requireAdmin()) {
-        return;
-    }
-
-    const confirmed =
-        confirm(
-            "Are you sure you want to EMERGENCY STOP this account?"
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    await sendCommand(
-        account,
-        "EMERGENCY_STOP"
+    const confirmed = confirm(
+        "Are you sure you want to EMERGENCY STOP this account?"
     );
-}
 
+    if (!confirmed) return;
+
+    await sendCommand(account, "EMERGENCY_STOP");
+}
 
 // ============================================================
 // ACTIVITY LOG
 // ============================================================
 
-function addActivity(
-    account,
-    command
-) {
+function addActivity(account, command) {
+    const activityList = document.getElementById("activity-list");
+    if (!activityList) return;
 
-    const activityList =
-        document.getElementById(
-            "activity-list"
-        );
+    const item = document.createElement("div");
+    item.className = "activity-item";
 
-    if (!activityList) {
-        return;
-    }
+    const accountText = document.createElement("strong");
+    accountText.textContent = account;
 
-    const item =
-        document.createElement("div");
+    const commandText = document.createElement("span");
+    commandText.textContent = command;
 
-    item.className =
-        "activity-item";
-
-    item.innerHTML = `
-        <strong>${account}</strong>
-        <span>${command}</span>
-    `;
-
+    item.appendChild(accountText);
+    item.appendChild(commandText);
     activityList.prepend(item);
-}
-
-
+} 
 // ============================================================
 // CONTROL TOGGLE
 // ============================================================
 
-function toggleControl(
-    element
-) {
-
-    if (!element) {
+function toggleControl(account, setting, element) {
+    if (!requireAdmin()) {
+        if (element) element.checked = !element.checked;
         return;
     }
 
-    if (!isAdmin()) {
-        alert("Admin access required.");
-        return;
-    }
+    if (!element) return;
 
-    element.classList.toggle(
-        "active"
-    );
+    console.log("Control changed:", {
+        account: account,
+        setting: setting,
+        enabled: element.checked
+    });
+
+    // Frontend state only. Worker integration is not changed here.
 }
 
-
 // ============================================================
-// ACCOUNT SETTINGS PLACEHOLDER
+// ACCOUNT SETTINGS
 // ============================================================
 
 async function loadSettings(account) {
-
-    console.log(
-        "Loading settings:",
-        account
-    );
-
+    console.log("Loading settings:", account);
     return true;
 }
+
 // ============================================================
 // ROLE ACCESS
 // ============================================================
 
 function applyRoleAccess() {
-
     const admin = isAdmin();
 
-    document
-        .querySelectorAll(".admin-only")
-        .forEach(function (element) {
+    document.querySelectorAll(
+        ".admin-only, [data-admin-only='true']"
+    ).forEach(function (element) {
+        element.classList.toggle(
+            "admin-access-hidden",
+            !admin
+        );
+    });
 
-            if (admin) {
-                element.classList.remove(
-                    "admin-access-hidden"
-                );
-            } else {
-                element.classList.add(
-                    "admin-access-hidden"
-                );
-            }
-        });
-
-
-    document
-        .querySelectorAll(
-            "[data-admin-only='true']"
-        )
-        .forEach(function (element) {
-
-            if (admin) {
-                element.classList.remove(
-                    "admin-access-hidden"
-                );
-            } else {
-                element.classList.add(
-                    "admin-access-hidden"
-                );
-            }
-        });
-
-
-    console.log(
-        "Role Access:",
-        admin ? "ADMIN" : "CUSTOMER"
+    document.querySelectorAll(".customer-only").forEach(
+        function (element) {
+            element.classList.toggle(
+                "customer-access-hidden",
+                admin
+            );
+        }
     );
-}
 
+    console.log("Role Access:", admin ? "ADMIN" : "CUSTOMER");
+}
 
 // ============================================================
 // SUBSCRIBER COUNT
 // ============================================================
 
 async function loadSubscriberCount() {
-
     if (!isAdmin()) {
-
-        console.log(
-            "Subscriber count: Admin access required. Skipping API."
-        );
-
+        console.log("Subscriber count: Admin access required. Skipping API.");
         return;
     }
 
     const token = getToken();
-
-    if (!token) {
-        return;
-    }
+    if (!token) return;
 
     try {
+        const response = await fetch(API_URL + "/subscribers/count", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
 
-        const response =
-            await fetch(
-                API_URL +
-                "/subscribers/count",
-                {
-                    method: "GET",
+        const data = await response.json();
+        console.log("Subscriber Count:", data);
 
-                    headers: {
-                        "Authorization":
-                            "Bearer " + token
-                    }
-                }
-            );
-
-        const data =
-            await response.json();
-
-        console.log(
-            "Subscriber Count:",
-            data
-        );
-
-        if (
-            !response.ok ||
-            data.ok === false
-        ) {
-            console.warn(
-                "Subscriber count error:",
-                data.error
-            );
-
+        if (!response.ok || data.ok === false) {
+            console.warn("Subscriber count error:", data.error);
             return;
         }
 
-        const count =
-            data.count ??
-            data.subscribers ??
-            0;
+        const count = data.count ?? data.subscribers ?? 0;
 
-        const elements =
-            document.querySelectorAll(
-                ".subscriber-count"
-            );
-
-        elements.forEach(
+        document.querySelectorAll(".subscriber-count").forEach(
             function (element) {
-                element.textContent =
-                    count;
+                element.textContent = count;
             }
         );
 
     } catch (error) {
-
-        console.error(
-            "Subscriber count error:",
-            error
-        );
+        console.error("Subscriber count error:", error);
     }
 }
-
 
 // ============================================================
 // CUSTOMERS
 // ============================================================
 
 async function loadCustomers() {
-
     if (!isAdmin()) {
-
-        console.log(
-            "Customers: Admin access required. Skipping customer API."
-        );
-
+        console.log("Customers: Admin access required. Skipping customer API.");
         return;
     }
 
     const token = getToken();
-
-    if (!token) {
-        return;
-    }
+    if (!token) return;
 
     try {
+        const response = await fetch(API_URL + "/customers", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
 
-        const response =
-            await fetch(
-                API_URL + "/customers",
-                {
-                    method: "GET",
+        const data = await response.json();
+        console.log("Customers:", data);
 
-                    headers: {
-                        "Authorization":
-                            "Bearer " + token
-                    }
-                }
-            );
-
-        const data =
-            await response.json();
-
-        console.log(
-            "Customers:",
-            data
-        );
-
-        if (
-            !response.ok ||
-            data.ok === false
-        ) {
-
-            console.warn(
-                "Customers API error:",
-                data.error
-            );
-
+        if (!response.ok || data.ok === false) {
+            console.warn("Customers API error:", data.error);
             return;
         }
 
-        const customers =
-            Array.isArray(data)
-                ? data
-                : (
-                    data.customers ||
-                    data.data ||
-                    []
-                );
+        const customers = Array.isArray(data)
+            ? data
+            : (data.customers || data.data || []);
 
-        renderCustomers(
-            customers
-        );
+        renderCustomers(customers);
 
     } catch (error) {
-
-        console.error(
-            "Customers error:",
-            error
-        );
+        console.error("Customers error:", error);
     }
 }
 
-
 // ============================================================
-// RENDER CUSTOMERS
+// RENDER CUSTOMERS SAFELY
 // ============================================================
 
 function renderCustomers(customers) {
-
-    const tableBody =
-        document.querySelector(
-            "#customers table tbody"
-        );
+    const tableBody = document.querySelector("#customers-list");
 
     if (!tableBody) {
-        console.error(
-            "Customers table body not found."
-        );
+        console.error("Customers table body not found.");
         return;
     }
 
-    tableBody.innerHTML = "";
+    tableBody.replaceChildren();
 
-    if (
-        !customers ||
-        customers.length === 0
-    ) {
-
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="6">
-                    No customers found.
-                </td>
-            </tr>
-        `;
-
+    if (!Array.isArray(customers) || customers.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 6;
+        cell.textContent = "No customers found.";
+        row.appendChild(cell);
+        tableBody.appendChild(row);
         return;
     }
 
     customers.forEach(function (customer) {
+        const row = document.createElement("tr");
 
-        const row =
-            document.createElement("tr");
+        const values = [
+            customer.customer_id || customer.id || "-",
+            customer.email || "-",
+            customer.role || "customer",
+            customer.created_at || customer.created || "-",
+            customer.status || "Active"
+        ];
 
-        const customerId =
-            customer.customer_id ||
-            customer.id ||
-            "-";
+        values.forEach(function (value) {
+            const cell = document.createElement("td");
+            cell.textContent = String(value);
+            row.appendChild(cell);
+        });
 
-        const email =
-            customer.email ||
-            "-";
+        const actionCell = document.createElement("td");
+        const viewButton = document.createElement("button");
 
-        const role =
-            customer.role ||
-            "customer";
+        viewButton.type = "button";
+        viewButton.textContent = "View";
+        viewButton.addEventListener("click", function () {
+            viewCustomer(customer);
+        });
 
-        const created =
-            customer.created_at ||
-            customer.created ||
-            "-";
-
-        const status =
-            customer.status ||
-            "Active";
-
-        row.innerHTML = `
-            <td>${customerId}</td>
-            <td>${email}</td>
-            <td>${role}</td>
-            <td>${created}</td>
-            <td>${status}</td>
-            <td>
-                <button
-                    type="button"
-                    onclick='viewCustomer(${JSON.stringify(customer)})'
-                >
-                    View
-                </button>
-            </td>
-        `;
-
+        actionCell.appendChild(viewButton);
+        row.appendChild(actionCell);
         tableBody.appendChild(row);
     });
 
-    console.log(
-        "Customers rendered:",
-        customers.length
-    );
+    console.log("Customers rendered:", customers.length);
 }
-
 
 // ============================================================
 // VIEW CUSTOMER
 // ============================================================
 
-function viewCustomer(
-    customer
-) {
+function viewCustomer(customer) {
+    if (!requireAdmin() || !customer) return;
 
-    if (!requireAdmin()) {
-        return;
-    }
-
-    if (!customer) {
-        return;
-    }
-
-    console.log(
-        "Customer Details:",
-        customer
+    setText(
+        "detail-customer-id",
+        customer.customer_id || customer.id || "-"
+    );
+    setText(
+        "detail-email",
+        customer.email || "-"
+    );
+    setText(
+        "detail-role",
+        customer.role || "customer"
+    );
+    setText(
+        "detail-status",
+        customer.status || "Active"
+    );
+    setText(
+        "detail-created",
+        customer.created_at || customer.created || "-"
     );
 
-    const customerId =
-        document.getElementById(
-            "detail-customer-id"
-        );
+    const panel = document.getElementById("customer-details-panel");
+    if (panel) panel.style.display = "block";
 
-    const customerEmail =
-        document.getElementById(
-            "detail-customer-email"
-        );
-
-    const customerRole =
-        document.getElementById(
-            "detail-customer-role"
-        );
-
-    if (customerId) {
-        customerId.textContent =
-            customer.customer_id ||
-            customer.id ||
-            "-";
-    }
-
-    if (customerEmail) {
-        customerEmail.textContent =
-            customer.email ||
-            "-";
-    }
-
-    if (customerRole) {
-        customerRole.textContent =
-            customer.role ||
-            "customer";
-    }
+    console.log("Customer Details:", customer);
 }
 
-
 // ============================================================
-// LOGIN
+// CLOSE CUSTOMER DETAILS
+// ============================================================
+
+function closeCustomerDetails() {
+    const panel = document.getElementById("customer-details-panel");
+    if (panel) panel.style.display = "none";
+}
+// ============================================================
+// CUSTOMER LOGIN
 // ============================================================
 
 async function customerLogin() {
+    const emailElement = document.getElementById("customer-email");
+    const passwordElement = document.getElementById("customer-password");
 
-    const emailElement =
-        document.getElementById(
-            "customer-email"
-        );
-
-    const passwordElement =
-        document.getElementById(
-            "customer-password"
-        );
-
-    if (
-        !emailElement ||
-        !passwordElement
-    ) {
-
-        alert(
-            "Login fields not found."
-        );
-
+    if (!emailElement || !passwordElement) {
+        alert("Login fields not found.");
         return;
     }
 
-    const email =
-        emailElement.value.trim();
-
-    const password =
-        passwordElement.value;
+    const email = emailElement.value.trim();
+    const password = passwordElement.value;
 
     if (!email || !password) {
-
-        alert(
-            "Please enter email and password."
-        );
-
+        alert("Please enter email and password.");
         return;
     }
 
     try {
+        const response = await fetch(API_URL + "/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
 
-        const response =
-            await fetch(
-                API_URL +
-                "/auth/login",
-                {
-                    method: "POST",
+        const data = await response.json();
+        console.log("ZK Login:", data);
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        email: email,
-                        password: password
-                    })
-                }
-            );
-
-        const data =
-            await response.json();
-
-        console.log(
-            "ZK Login:",
-            data
-        );
-
-        if (
-            !response.ok ||
-            data.ok === false
-        ) {
-
-            alert(
-                "Login failed: " +
-                (
-                    data.error ||
-                    "Invalid email or password"
-                )
-            );
-
+        if (!response.ok || data.ok === false) {
+            alert("Login failed: " + (data.error || "Invalid email or password"));
             return;
         }
 
         if (!data.token) {
-
-            alert(
-                "Login successful but no token was returned."
-            );
-
+            alert("Login successful but no token was returned.");
             return;
         }
 
-        localStorage.setItem(
-            "ZK_customer_token",
-            data.token
-        );
-
+        localStorage.setItem("ZK_customer_token", data.token);
         localStorage.setItem(
             "ZK_customer_id",
-            data.customer_id ||
-            data.id ||
-            ""
+            data.customer_id || data.id || ""
         );
-
         localStorage.setItem(
             "ZK_customer_role",
-            data.role ||
-            "customer"
+            String(data.role || "customer").toLowerCase()
         );
 
         applyRoleAccess();
 
-        alert(
-            "Login successful."
-        );
+        alert("Login successful.");
 
         await loadSubscriberCount();
         await loadCustomers();
 
     } catch (error) {
-
-        console.error(
-            "ZK Login Error:",
-            error
-        );
-
-        alert(
-            "Login connection failed."
-        );
+        console.error("ZK Login Error:", error);
+        alert("Login connection failed.");
     }
 }
 
-
 // ============================================================
-// REGISTER
+// CUSTOMER REGISTER
 // ============================================================
 
 async function customerRegister() {
+    const emailElement = document.getElementById("customer-email");
+    const passwordElement = document.getElementById("customer-password");
 
-    const emailElement =
-        document.getElementById(
-            "customer-email"
-        );
-
-    const passwordElement =
-        document.getElementById(
-            "customer-password"
-        );
-
-    if (
-        !emailElement ||
-        !passwordElement
-    ) {
-
-        alert(
-            "Registration fields not found."
-        );
-
+    if (!emailElement || !passwordElement) {
+        alert("Registration fields not found.");
         return;
     }
 
-    const email =
-        emailElement.value.trim();
-
-    const password =
-        passwordElement.value;
+    const email = emailElement.value.trim();
+    const password = passwordElement.value;
 
     if (!email || !password) {
-
-        alert(
-            "Please enter email and password."
-        );
-
+        alert("Please enter email and password.");
         return;
     }
 
     try {
+        const response = await fetch(API_URL + "/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
 
-        const response =
-            await fetch(
-                API_URL +
-                "/auth/register",
-                {
-                    method: "POST",
+        const data = await response.json();
+        console.log("ZK Register:", data);
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        email: email,
-                        password: password
-                    })
-                }
-            );
-
-        const data =
-            await response.json();
-
-        console.log(
-            "ZK Register:",
-            data
-        );
-
-        if (
-            !response.ok ||
-            data.ok === false
-        ) {
-
-            alert(
-                "Registration failed: " +
-                (
-                    data.error ||
-                    "Unable to create account"
-                )
-            );
-
+        if (!response.ok || data.ok === false) {
+            alert("Registration failed: " + (data.error || "Unable to create account"));
             return;
         }
 
-        alert(
-            "Account created successfully. Please login."
-        );
+        alert("Account created successfully. Please login.");
 
     } catch (error) {
-
-        console.error(
-            "ZK Register Error:",
-            error
-        );
-
-        alert(
-            "Registration connection failed."
-        );
+        console.error("ZK Register Error:", error);
+        alert("Registration connection failed.");
     }
 }
+
 // ============================================================
-// SUBSCRIPTION
+// SUBSCRIPTIONS
 // ============================================================
 
 function subscribePremium() {
     window.location.href = "payment.html";
 }
-    alert(
-        "Premium subscription request submitted."
-    );
-}
-
 
 async function subscribeDemo() {
-
     if (!getToken()) {
         alert("Please login first.");
         return;
     }
 
-    alert(
-        "Demo account subscription request submitted."
-    );
+    alert("Demo account subscription request submitted.");
 }
-
 
 // ============================================================
 // DOM READY
 // ============================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
+    applyRoleAccess();
 
-        applyRoleAccess();
+    loadSettings("premium");
+    loadSettings("second");
 
-        loadSettings("premium");
-        loadSettings("second");
+    loadSubscriberCount();
+    loadCustomers();
 
-        loadSubscriberCount();
-        loadCustomers();
-
-        console.log(
-            "ZK Traders Bot Dashboard loaded."
-        );
-    }
-);
-
+    console.log("ZK Traders Bot Dashboard loaded.");
+});
 
 // ============================================================
 // GLOBAL FUNCTIONS
 // ============================================================
 
-window.setBotStatus =
-    setBotStatus;
-
-window.emergencyStop =
-    emergencyStop;
-
-window.customerLogin =
-    customerLogin;
-
-window.customerRegister =
-    customerRegister;
-
-window.subscribePremium =
-    subscribePremium;
-
-window.subscribeDemo =
-    subscribeDemo;
-
-window.toggleControl =
-    toggleControl;
-
-window.renderCustomers =
-    renderCustomers;
-
-window.viewCustomer =
-    viewCustomer;
-
-window.loadCustomers =
-    loadCustomers;
-
-window.loadSubscriberCount =
-    loadSubscriberCount;
-
-window.loadSettings =
-    loadSettings;
-
-window.sendCommand =
-    sendCommand;
-
-window.updateStatus =
-    updateStatus;
-
-window.applyRoleAccess =
-    applyRoleAccess;
-
-window.requireAdmin =
-    requireAdmin;
-
-window.isAdmin =
-    isAdmin;
+window.setBotStatus = setBotStatus;
+window.emergencyStop = emergencyStop;
+window.customerLogin = customerLogin;
+window.customerRegister = customerRegister;
+window.subscribePremium = subscribePremium;
+window.subscribeDemo = subscribeDemo;
+window.toggleControl = toggleControl;
+window.renderCustomers = renderCustomers;
+window.viewCustomer = viewCustomer;
+window.closeCustomerDetails = closeCustomerDetails;
+window.loadCustomers = loadCustomers;
+window.loadSubscriberCount = loadSubscriberCount;
+window.loadSettings = loadSettings;
+window.sendCommand = sendCommand;
+window.updateStatus = updateStatus;
+window.applyRoleAccess = applyRoleAccess;
+window.requireAdmin = requireAdmin;
+window.isAdmin = isAdmin;
